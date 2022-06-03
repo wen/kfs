@@ -2,9 +2,13 @@ NAME = kfs.bin
 CC = i686-elf-gcc
 RM = /bin/rm -f
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re iso
 
 all: $(NAME)
+
+iso: $(NAME)
+	cp $(NAME) iso/boot/$(NAME)
+	grub-mkrescue -o kfs.iso iso
 
 $(NAME): boot.o kernel.o
 	$(CC) -T linker.ld -o $(NAME) -ffreestanding -O2 -nostdlib boot.o kernel.o -lgcc
@@ -20,5 +24,7 @@ clean:
 
 fclean: clean
 	$(RM) $(NAME)
+	$(RM) iso/boot/$(NAME)
+	$(RM) kfs.iso
 
 re: fclean all
