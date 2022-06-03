@@ -9,10 +9,10 @@ all: $(NAME)
 $(NAME): boot.o kernel.o
 	$(CC) -T linker.ld -o $(NAME) -ffreestanding -O2 -nostdlib boot.o kernel.o -lgcc
 
-boot.o:
+boot.o: boot.s
 	i686-elf-as boot.s -o boot.o
 
-kernel.o:
+kernel.o: kernel.c
 	$(CC) -c kernel.c -o kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 
 clean:
