@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
- 
+
 enum vga_color {
 	VGA_COLOR_BLACK = 0,
 	VGA_COLOR_BLUE = 1,
@@ -20,25 +20,25 @@ enum vga_color {
 	VGA_COLOR_LIGHT_BROWN = 14,
 	VGA_COLOR_WHITE = 15,
 };
- 
+
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg)
 {
 	return fg | bg << 4;
 }
- 
+
 static inline uint16_t vga_entry(unsigned char uc, uint8_t color)
 {
 	return (uint16_t) uc | (uint16_t) color << 8;
 }
- 
+
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
- 
+
 size_t terminal_row;
 size_t terminal_column;
 uint8_t terminal_color;
 uint16_t* terminal_buffer;
- 
+
 void terminal_initialize(void)
 {
 	terminal_row = 0;
@@ -52,12 +52,12 @@ void terminal_initialize(void)
 		}
 	}
 }
- 
+
 void terminal_setcolor(uint8_t color)
 {
 	terminal_color = color;
 }
- 
+
 void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
 {
 	const size_t index = y * VGA_WIDTH + x;
@@ -72,7 +72,7 @@ size_t ft_strlen(const char *str)
 		++str;
 	return (str - save);
 }
- 
+
 void ft_putchar(char c)
 {
 	if (c == '\n') {
@@ -87,7 +87,7 @@ void ft_putchar(char c)
 			terminal_row = 0;
 	}
 }
- 
+
 void ft_putstr(const char *str)
 {
 	char *ptr = (char*)str;
@@ -95,10 +95,10 @@ void ft_putstr(const char *str)
 	while (*ptr)
 		ft_putchar(*ptr++);
 }
- 
+
 void kernel_main(void)
 {
 	terminal_initialize();
- 
+
 	ft_putstr("Hello, kernel World!\n");
 }
