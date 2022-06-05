@@ -1,5 +1,7 @@
 NAME = kfs.bin
 CC = i686-elf-gcc
+CFLAGS = -Wall -ffreestanding -O2
+LFLAGS = -nodefaultlibs -nostdlib
 RM = /bin/rm -f
 
 .PHONY: all clean fclean re iso
@@ -10,14 +12,14 @@ iso: $(NAME)
 	cp $(NAME) iso/boot/$(NAME)
 	grub-mkrescue -o kfs.iso iso
 
-$(NAME): boot.o kernel.o
-	$(CC) -T linker.ld -o $(NAME) -ffreestanding -O2 -nostdlib boot.o kernel.o -lgcc
+$(NAME): linker.ld boot.o kernel.o
+	$(CC) $(CFLAGS) $(LFLAGS) -T linker.ld -o $@ boot.o kernel.o
 
 boot.o: boot.s
 	i686-elf-as boot.s -o boot.o
 
 kernel.o: kernel.c
-	$(CC) -c kernel.c -o kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	$(RM) boot.o kernel.o
