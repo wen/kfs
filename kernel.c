@@ -13,7 +13,7 @@ void terminal_initialize(void)
 {
 	terminal_row = 0;
 	terminal_column = 0;
-	terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+	terminal_color = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
 	terminal_buffer = (uint16_t*)0xB8000;
 	for (size_t y = 0; y < VGA_HEIGHT; y++) {
 		for (size_t x = 0; x < VGA_WIDTH; x++) {
@@ -53,7 +53,7 @@ void kernel_main(void)
 {
 	terminal_initialize();
 
-	terminal_color = vga_entry_color(VGA_COLOR_LIGHT_CYAN, VGA_COLOR_BLACK);
+	terminal_color = vga_entry_color(VGA_LIGHT_CYAN, VGA_BLACK);
 	ft_putchar('\n');
 	ft_putstr("@@@  @@@  @@@@@@@@   @@@@@@           @@@    @@@@@@\n");
 	ft_putstr("@@@  @@@  @@@@@@@@  @@@@@@@          @@@@   @@@@@@@@\n");
@@ -66,6 +66,6 @@ void kernel_main(void)
 	ft_putstr(" ::  :::   ::       :::: ::           :::   :: :::::\n");
 	ft_putstr(" :   :::   :        :: : :            :::   :: : :::\n");
 	ft_putchar('\n');
-	terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+	terminal_color = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
 	ft_putstr("Hello, world!\n");
 }
