@@ -4,68 +4,74 @@
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
 
-size_t terminal_row;
-size_t terminal_column;
-uint8_t terminal_color;
-uint16_t *terminal_buffer;
+size_t krow;
+size_t kcolumn;
+uint8_t kcolor;
+uint16_t *kbuffer;
 
-void terminal_initialize(void)
+void kinitialize(void)
 {
-	terminal_row = 0;
-	terminal_column = 0;
-	terminal_color = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
-	terminal_buffer = (uint16_t*)0xB8000;
+	krow = 0;
+	kcolumn = 0;
+	kcolor = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
+	kbuffer = (uint16_t*)0xB8000;
 	for (size_t y = 0; y < VGA_HEIGHT; y++) {
 		for (size_t x = 0; x < VGA_WIDTH; x++) {
 			const size_t index = y * VGA_WIDTH + x;
-			terminal_buffer[index] = vga_entry(' ', terminal_color);
+			kbuffer[index] = vga_entry(' ', kcolor);
 		}
 	}
 }
 
-void ft_putchar(char c)
+void kputchar(char c)
 {
 	size_t index;
 
 	if (c == '\n') {
-		terminal_column = 0;
-		++terminal_row;
+		kcolumn = 0;
+		++krow;
 	} else {
-		index = terminal_row * VGA_WIDTH + terminal_column;
-		terminal_buffer[index] = vga_entry(c, terminal_color);
+		index = krow * VGA_WIDTH + kcolumn;
+		kbuffer[index] = vga_entry(c, kcolor);
 	}
-	if (++terminal_column == VGA_WIDTH) {
-		terminal_column = 0;
-		if (++terminal_row == VGA_HEIGHT)
-			terminal_row = 0;
+	if (++kcolumn == VGA_WIDTH) {
+		kcolumn = 0;
+		if (++krow == VGA_HEIGHT)
+			krow = 0;
 	}
 }
 
-void ft_putstr(const char *str)
+void kwrite(const char *str, size_t size)
+{
+	for (size_t i = 0; i < size; ++i)
+		kputchar(str[i]);
+}
+
+void kputstr(const char *str)
 {
 	char *ptr = (char*)str;
 
 	while (*ptr)
-		ft_putchar(*ptr++);
+		kputchar(*ptr++);
 }
 
 void kernel_main(void)
 {
-	terminal_initialize();
+	kinitialize();
 
-	terminal_color = vga_entry_color(VGA_LIGHT_CYAN, VGA_BLACK);
-	ft_putchar('\n');
-	ft_putstr("@@@  @@@  @@@@@@@@   @@@@@@           @@@    @@@@@@\n");
-	ft_putstr("@@@  @@@  @@@@@@@@  @@@@@@@          @@@@   @@@@@@@@\n");
-	ft_putstr("@@!  !@@  @@!       !@@             @@!@!        @@@\n");
-	ft_putstr("!@!  @!!  !@!       !@!            !@!!@!       @!@\n");
-	ft_putstr("@!@@!@!   @!!!:!    !!@@!!        @!! @!!      !!@\n");
-	ft_putstr("!!@!!!    !!!!!:     !!@!!!      !!!  !@!     !!:\n");
-	ft_putstr("!!: :!!   !!:            !:!     :!!:!:!!:   !:!\n");
-	ft_putstr(":!:  !:!  :!:           !:!      !:::!!:::  :!:\n");
-	ft_putstr(" ::  :::   ::       :::: ::           :::   :: :::::\n");
-	ft_putstr(" :   :::   :        :: : :            :::   :: : :::\n");
-	ft_putchar('\n');
-	terminal_color = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
-	ft_putstr("Hello, world!\n");
+	kcolor = vga_entry_color(VGA_LIGHT_CYAN, VGA_BLACK);
+	kputchar('\n');
+	kputstr("@@@  @@@  @@@@@@@@   @@@@@@           @@@    @@@@@@\n");
+	kputstr("@@@  @@@  @@@@@@@@  @@@@@@@          @@@@   @@@@@@@@\n");
+	kputstr("@@!  !@@  @@!       !@@             @@!@!        @@@\n");
+	kputstr("!@!  @!!  !@!       !@!            !@!!@!       @!@\n");
+	kputstr("@!@@!@!   @!!!:!    !!@@!!        @!! @!!      !!@\n");
+	kputstr("!!@!!!    !!!!!:     !!@!!!      !!!  !@!     !!:\n");
+	kputstr("!!: :!!   !!:            !:!     :!!:!:!!:   !:!\n");
+	kputstr(":!:  !:!  :!:           !:!      !:::!!:::  :!:\n");
+	kputstr(" ::  :::   ::       :::: ::           :::   :: :::::\n");
+	kputstr(" :   :::   :        :: : :            :::   :: : :::\n");
+	kputchar('\n');
+	kcolor = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
+	kputstr("Hello, world!\n");
 }
