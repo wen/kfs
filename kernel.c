@@ -2,6 +2,7 @@
 #include "vga.h"
 #include "stdio.h"
 #include "string.h"
+#include "io.h"
 
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
@@ -25,6 +26,14 @@ void kinitialize(void)
 	}
 }
 
+void set_cursor(uint16_t pos)
+{
+    outb(0x3D4, 14);
+    outb(0x3D5, (pos >> 8));
+    outb(0x3D4, 15);
+    outb(0x3D5, pos);
+}
+
 void kputchar(char c)
 {
 	size_t index;
@@ -35,6 +44,7 @@ void kputchar(char c)
 	} else {
 		index = krow * VGA_WIDTH + kcolumn;
 		kbuffer[index] = vga_entry(c, kcolor);
+		set_cursor(index + 1);
 	}
 	if (++kcolumn == VGA_WIDTH) {
 		kcolumn = 0;
@@ -57,6 +67,7 @@ void kputstr(const char *str)
 		kputchar(*ptr++);
 }
 
+
 void kernel_main(void)
 {
 	kinitialize();
@@ -74,6 +85,12 @@ void kernel_main(void)
 	kputstr(" ::  :::   ::       :::: ::           :::   :: :::::\n");
 	kputstr(" :   :::   :        :: : :            :::   :: : :::\n");
 	kputchar('\n');
-	kcolor = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
+	kcolor = vga_entry_color(VGA_LIGHT_BLUE, VGA_BLACK);
 	printf("%s\n", "Hello, world!");
+	kcolor = vga_entry_color(VGA_LIGHT_GREEN, VGA_BLACK);
+	printf("Hello, world!\n");
+	kcolor = vga_entry_color(VGA_LIGHT_RED, VGA_BLACK);
+	printf("Hello, world!%c", '\n');
+	kcolor = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
+	printf("%c%c", '$', ' ');
 }
