@@ -1,10 +1,10 @@
-NAME = kfs.bin
-CC = i686-elf-gcc
-CFLAGS = -Wall -ffreestanding -O2
-LFLAGS = -nodefaultlibs -nostdlib
-SRCS = kernel.c
-OBJS = $(SRCS:.c=.o)
-RM = /bin/rm -f
+NAME := kfs.bin
+CC := i686-elf-gcc
+CFLAGS := -Wall -ffreestanding -O2
+LFLAGS := -nodefaultlibs -nostdlib
+SRCS := kernel.c
+OBJS := $(SRCS:.c=.o)
+RM := /bin/rm -f
 
 .PHONY: all clean fclean re iso
 
