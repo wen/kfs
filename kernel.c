@@ -1,5 +1,7 @@
 #include <stddef.h>
 #include "vga.h"
+#include "stdio.h"
+#include "string.h"
 
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
@@ -73,5 +75,5 @@ void kernel_main(void)
 	kputstr(" :   :::   :        :: : :            :::   :: : :::\n");
 	kputchar('\n');
 	kcolor = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
-	kputstr("Hello, world!\n");
+	printf("%s\n", "Hello, world!");
 }

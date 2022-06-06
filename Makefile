@@ -1,8 +1,14 @@
 NAME := kfs.bin
 CC := i686-elf-gcc
-CFLAGS := -Wall -ffreestanding -O2
+CFLAGS := -Wall -Wextra -ffreestanding -O2 -I. -I./libk
 LFLAGS := -nodefaultlibs -nostdlib
-SRCS := kernel.c
+SRCS := kernel.c \
+		libk/memset.c \
+		libk/memcpy.c \
+		libk/memcmp.c \
+		libk/strlen.c \
+		libk/putchar.c \
+		libk/printf.c
 OBJS := $(SRCS:.c=.o)
 RM := /bin/rm -f
 
@@ -15,7 +21,7 @@ iso: $(NAME)
 	grub-mkrescue -o kfs.iso iso
 
 $(NAME): $(OBJS) linker.ld boot.o
-	$(CC) $(CFLAGS) $(LFLAGS) -T linker.ld -o $@ boot.o $<
+	$(CC) -T linker.ld -o $@ $(CFLAGS) $(LFLAGS) boot.o $(OBJS) -lgcc
 
 boot.o: boot.s
 	i686-elf-as boot.s -o boot.o
