@@ -1,1 +1,3 @@
 *.o
+/iso/boot/kfs.bin
+/kfs.iso
