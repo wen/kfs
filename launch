@@ -1,2 +1,0 @@
-#!/bin/sh
-qemu-system-i386 -kernel kfs.bin

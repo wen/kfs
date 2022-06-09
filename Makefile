@@ -1,8 +1,8 @@
 NAME := kfs.bin
 CC := i686-elf-gcc
-CFLAGS := -Wall -Wextra -ffreestanding -O2 -I. -I./libk
+CFLAGS := -Wall -Wextra -ffreestanding -O2 -I./kernel -I./libk
 LFLAGS := -nodefaultlibs -nostdlib
-SRCS := kernel.c \
+SRCS := kernel/kernel.c \
 		libk/memset.c \
 		libk/memcpy.c \
 		libk/memcmp.c \
@@ -10,6 +10,8 @@ SRCS := kernel.c \
 		libk/putchar.c \
 		libk/printf.c
 OBJS := $(SRCS:.c=.o)
+ASM_SRCS := kernel/boot.s
+ASM_OBJS := $(ASM_SRCS:.s=.o)
 RM := /bin/rm -f
 
 .PHONY: all clean fclean re iso
@@ -20,14 +22,14 @@ iso: $(NAME)
 	cp $(NAME) iso/boot/$(NAME)
 	grub-mkrescue -o kfs.iso iso
 
-$(NAME): $(OBJS) linker.ld boot.o
-	$(CC) -T linker.ld -o $@ $(CFLAGS) $(LFLAGS) boot.o $(OBJS) -lgcc
+$(NAME): $(ASM_OBJS) $(OBJS) linker.ld
+	$(CC) -T linker.ld -o $@ $(CFLAGS) $(LFLAGS) $(ASM_OBJS) $(OBJS) -lgcc
 
-boot.o: boot.s
-	i686-elf-as boot.s -o boot.o
+$(ASM_OBJS): $(ASM_SRCS)
+	i686-elf-as $< -o $@
 
 clean:
-	$(RM) boot.o $(OBJS)
+	$(RM) $(ASM_OBJS) $(OBJS)
 
 fclean: clean
 	$(RM) $(NAME)
