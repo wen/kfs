@@ -1,16 +1,17 @@
-#ifndef PRINTFLOCAL_H
-#define PRINTFLOCAL_H
+#ifndef PRINTKLOCAL_H
+#define PRINTKLOCAL_H
+
 #include <stdarg.h>
 #include <stdint.h>
 #include <limits.h>
 #include "tty.h"
-#include "stdio.h"
 #include "string.h"
+
 #define BUF			32
 #define U_LONG		unsigned long
 #define FLAGS		"#0*- +"
 #define MOD        	"hljz"
-#define TYPES		"diouxXDOUcspn"
+#define TYPES		"diouxXDOUcsp"
 #define ALT			0x001
 #define LADJUST		0x004
 #define LONGDBL		0x008

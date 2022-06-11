@@ -1,14 +1,14 @@
-#include "printflocal.h"
+#include "printklocal.h"
 
-static char *ujtoa_dec(uintmax_t val, char *cp)
+static char	*ultoa_dec(U_LONG val, char *cp)
 {
-	int sval;
+	long sval;
 
 	if (val < 10) {
-		*--cp = TOCHAR(val % 10);
-		return (cp);
+		*--cp = TOCHAR(val);
+		return cp;
 	}
-	if (val > INTMAX_MAX) {
+	if (val > LONG_MAX) {
 		*--cp = TOCHAR(val % 10);
 		sval = val / 10;
 	} else {
@@ -20,11 +20,10 @@ static char *ujtoa_dec(uintmax_t val, char *cp)
 		if (sval == 0)
 			break;
 	}
-
 	return cp;
 }
 
-static char *ujtoa_oct(uintmax_t val, char *cp, int octzero)
+static char *ultoa_oct(U_LONG val, char *cp, int octzero)
 {
 	while (1) {
 		*--cp = TOCHAR(val & 7);
@@ -38,7 +37,7 @@ static char *ujtoa_oct(uintmax_t val, char *cp, int octzero)
 	return cp;
 }
 
-static char *ujtoa_hex(uintmax_t val, char *cp, const char *xdigs)
+static char *ultoa_hex(U_LONG val, char *cp, const char *xdigs)
 {
 	while (1) {
 		*--cp = xdigs[val & 15];
@@ -50,19 +49,16 @@ static char *ujtoa_hex(uintmax_t val, char *cp, const char *xdigs)
 	return cp;
 }
 
-char *ujtoa(t_pf *pf, uintmax_t val, char *endp)
+char *ultoa(t_pf *pf, U_LONG val, char *endp)
 {
-	char *cp;
+	char *cp = endp;
 
-	if (val <= ULONG_MAX)
-		return (ultoa(pf, (U_LONG)val, endp));
-	cp = endp;
 	if (pf->base == 10)
-		cp = ujtoa_dec(val, cp);
+		cp = ultoa_dec(val, cp);
 	else if (pf->base == 8)
-		cp = ujtoa_oct(val, cp, pf->flags & ALT);
+		cp = ultoa_oct(val, cp, pf->flags & ALT);
 	else if (pf->base == 16)
-		cp = ujtoa_hex(val, cp, pf->xdigs);
+		cp = ultoa_hex(val, cp, pf->xdigs);
 
 	return cp;
 }

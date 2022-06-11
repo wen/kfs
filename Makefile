@@ -3,16 +3,15 @@ CC := i686-elf-gcc
 CFLAGS := -Wall -Wextra -ffreestanding -O2 -I./kernel -I./libk
 LFLAGS := -nodefaultlibs -nostdlib
 SRCS := kernel/kernel.c \
+		kernel/printk.c \
+		kernel/ultoa.c \
+		kernel/ujtoa.c \
 		libk/memset.c \
 		libk/memcpy.c \
 		libk/memcmp.c \
 		libk/strlen.c \
-		libk/putchar.c \
 		libk/strchr.c \
-		libk/strnlen.c \
-		libk/printk.c \
-		libk/ultoa.c \
-		libk/ujtoa.c
+		libk/strnlen.c
 OBJS := $(SRCS:.c=.o)
 ASM_SRCS := kernel/boot.s
 ASM_OBJS := $(ASM_SRCS:.s=.o)

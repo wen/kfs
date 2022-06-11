@@ -1,6 +1,6 @@
 #include <stddef.h>
 #include "vga.h"
-#include "stdio.h"
+#include "tty.h"
 #include "string.h"
 #include "io.h"
 
