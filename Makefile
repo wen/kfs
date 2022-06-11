@@ -8,7 +8,11 @@ SRCS := kernel/kernel.c \
 		libk/memcmp.c \
 		libk/strlen.c \
 		libk/putchar.c \
-		libk/printf.c
+		libk/strchr.c \
+		libk/strnlen.c \
+		libk/printk.c \
+		libk/ultoa.c \
+		libk/ujtoa.c
 OBJS := $(SRCS:.c=.o)
 ASM_SRCS := kernel/boot.s
 ASM_OBJS := $(ASM_SRCS:.s=.o)

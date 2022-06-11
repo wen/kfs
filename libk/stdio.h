@@ -4,6 +4,6 @@
 #define EOF (-1)
 
 int putchar(int c);
-int printf(const char* restrict format, ...);
+int printk(const char *format, ...);
 
 #endif

@@ -2,8 +2,10 @@
 #define PRINTFLOCAL_H
 #include <stdarg.h>
 #include <stdint.h>
-#include <unistd.h>
-#include "libft.h"
+#include <limits.h>
+#include "tty.h"
+#include "stdio.h"
+#include "string.h"
 #define BUF			32
 #define U_LONG		unsigned long
 #define FLAGS		"#0*- +"
@@ -29,9 +31,10 @@
 #define BLKS {' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '}
 #define ZERO {'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'}
 
+typedef long ssize_t;
+
 typedef struct	s_pf
 {
-	int			fd;
 	char		*fmt;
 	int			ch;
 	int			n;
@@ -53,35 +56,11 @@ typedef struct	s_pf
 	char		buf[BUF];
 	char		ox[2];
 	va_list		ap;
-	t_vec		*v;
 	char		*dst;
 	int			cursor;
 }				t_pf;
 
-void		pf_init1(t_pf *pf);
-void		pf_parse(t_pf *pf);
-void		pf_parse_flags(t_pf *pf);
-void		pf_parse_precision_width(t_pf *pf);
-void		pf_parse_mod(t_pf *pf);
-void		pf_parse_type(t_pf *pf);
-void		pf_get_cc(t_pf *pf);
-void		pf_get_ss(t_pf *pf);
-void		pf_get_p(t_pf *pf);
-void		pf_set_n(t_pf *pf);
-void		pf_number(t_pf *pf);
-void		pf_nosign(t_pf *pf);
-void		pf_print(t_pf *pf);
-void		spf_print(t_pf *pf);
-void		aspf_print(t_pf *pf);
-void		pf_raw_string(t_pf *pf);
-void		spf_raw_string(t_pf *pf);
-void		aspf_raw_string(t_pf *pf);
-long		sarg(t_pf *pf, int flags);
-U_LONG		uarg(t_pf *pf, int flags);
-intmax_t	sjarg(t_pf *pf, int flags);
-uintmax_t	ujarg(t_pf *pf, int flags);
-void		getaster(t_pf *pf, int *val);
-char		*ultoa(t_pf *pf, U_LONG val, char *endp);
-char		*ujtoa(t_pf *pf, uintmax_t val, char *endp);
+char *ujtoa(t_pf *pf, uintmax_t val, char *endp);
+char *ultoa(t_pf *pf, U_LONG val, char *endp);
 
 #endif

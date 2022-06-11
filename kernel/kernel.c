@@ -67,14 +67,10 @@ void kputstr(const char *str)
 		kputchar(*ptr++);
 }
 
-
-void kernel_main(void)
+static void banner(void)
 {
-	kinitialize();
-
 	kcolor = vga_entry_color(VGA_LIGHT_CYAN, VGA_BLACK);
-	kputchar('\n');
-	kputstr("@@@  @@@  @@@@@@@@   @@@@@@           @@@    @@@@@@\n");
+	kputstr("\n@@@  @@@  @@@@@@@@   @@@@@@           @@@    @@@@@@\n");
 	kputstr("@@@  @@@  @@@@@@@@  @@@@@@@          @@@@   @@@@@@@@\n");
 	kputstr("@@!  !@@  @@!       !@@             @@!@!        @@@\n");
 	kputstr("!@!  @!!  !@!       !@!            !@!!@!       @!@\n");
@@ -83,14 +79,15 @@ void kernel_main(void)
 	kputstr("!!: :!!   !!:            !:!     :!!:!:!!:   !:!\n");
 	kputstr(":!:  !:!  :!:           !:!      !:::!!:::  :!:\n");
 	kputstr(" ::  :::   ::       :::: ::           :::   :: :::::\n");
-	kputstr(" :   :::   :        :: : :            :::   :: : :::\n");
-	kputchar('\n');
-	kcolor = vga_entry_color(VGA_LIGHT_BLUE, VGA_BLACK);
-	printf("%s\n", "Hello, world!");
-	kcolor = vga_entry_color(VGA_LIGHT_GREEN, VGA_BLACK);
-	printf("Hello, world!\n");
-	kcolor = vga_entry_color(VGA_LIGHT_RED, VGA_BLACK);
-	printf("Hello, world!%c", '\n');
+	kputstr(" :   :::   :        :: : :            :::   :: : :::\n\n");
+}
+
+void kernel_main(void)
+{
+	kinitialize();
+	banner();
+
 	kcolor = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
-	printf("%c%c", '$', ' ');
+	printk("Hello, world! %d %c", 42, '\n');
+	printk("%c%c", '$', ' ');
 }
