@@ -1,17 +1,17 @@
 NAME := kfs.bin
 CC := i686-elf-gcc
-CFLAGS := -Wall -Wextra -ffreestanding -O2 -I./kernel -I./libk
+CFLAGS := -Wall -Wextra -ffreestanding -O2 -I./kernel -I./libc
 LFLAGS := -nodefaultlibs -nostdlib
 SRCS := kernel/kernel.c \
 		kernel/printk.c \
 		kernel/ultoa.c \
 		kernel/ujtoa.c \
-		libk/memset.c \
-		libk/memcpy.c \
-		libk/memcmp.c \
-		libk/strlen.c \
-		libk/strchr.c \
-		libk/strnlen.c
+		libc/memset.c \
+		libc/memcpy.c \
+		libc/memcmp.c \
+		libc/strlen.c \
+		libc/strchr.c \
+		libc/strnlen.c
 OBJS := $(SRCS:.c=.o)
 ASM_SRCS := kernel/boot.s
 ASM_OBJS := $(ASM_SRCS:.s=.o)
