@@ -56,7 +56,7 @@ void kputchar(char c)
 	if (c == '\n') {
 		cursor_x = 0;
 		++cursor_y;
-	} else if (c >= ' ') {
+	} else if (ISPRINT(c)) {
 		index = cursor_y * VGA_WIDTH + cursor_x;
 		kbuffer[index] = vga_entry(c, kcolor);
 		++cursor_x;
