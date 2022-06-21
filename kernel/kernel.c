@@ -5,8 +5,7 @@
 #include "io.h"
 #include "stack.h"
 #include "gdt.h"
-
-void shell(void);
+#include "shell.h"
 
 static const uint8_t VGA_WIDTH = 80;
 static const uint8_t VGA_HEIGHT = 25;
@@ -87,7 +86,6 @@ void kputstr(const char *str)
 
 static void banner(void)
 {
-	kcolor = vga_entry_color(VGA_LIGHT_CYAN, VGA_BLACK);
 	kputstr("@@@  @@@  @@@@@@@@   @@@@@@           @@@    @@@@@@\n");
 	kputstr("@@@  @@@  @@@@@@@@  @@@@@@@          @@@@   @@@@@@@@\n");
 	kputstr("@@!  !@@  @@!       !@@             @@!@!        @@@\n");
@@ -103,11 +101,10 @@ static void banner(void)
 void kernel_main(void)
 {
 	kinit();
+
+	kcolor = vga_entry_color(VGA_LIGHT_CYAN, VGA_BLACK);
 	banner();
 
 	kcolor = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
-	printk("%08x\n", get_esp());
-	printk("%08x\n", get_ebp());
-	printk("%c%c", '$', ' ');
 	shell();
 }

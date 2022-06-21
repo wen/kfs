@@ -2,20 +2,13 @@ NAME := kfs.bin
 CC := i686-elf-gcc
 CFLAGS := -Wall -Wextra -ffreestanding -O2 -I./kernel -I./libc
 LFLAGS := -nodefaultlibs -nostdlib
-HDR := kernel/vga.h \
-	   kernel/tty.h \
-	   kernel/io.h \
-	   kernel/gdt.h \
-	   kernel/idt.h \
-	   kernel/stack.h \
-	   kernel/printklocal.h \
-	   libc/string.h
+HDR := $(shell find kernel -type f -name *.h)
 SRCS := kernel/kernel.c \
 		kernel/printk.c \
 		kernel/ultoa.c \
 		kernel/ujtoa.c \
 		kernel/gdt.c \
-		kernel/idt.c \
+		kernel/shell.c \
 		libc/memset.c \
 		libc/memcpy.c \
 		libc/memcmp.c \
@@ -23,7 +16,7 @@ SRCS := kernel/kernel.c \
 		libc/strchr.c \
 		libc/strnlen.c
 OBJS := $(SRCS:.c=.o)
-ASM_SRCS := kernel/isr.s
+ASM_SRCS := $(shell find kernel -type f -name *.s)
 ASM_OBJS := $(ASM_SRCS:.s=.o)
 RM := /bin/rm -f
 
