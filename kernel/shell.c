@@ -74,6 +74,8 @@ void shell(void)
 		kputchar(' ');
 		getline(buf);
 		if (strlen(buf) > 0) {
+			if (!strcmp(buf, "halt") || !strcmp(buf, "shutdown"))
+				shutdown();
 			memset(buf, 0, BUF_SIZE);
 		}
 	}
