@@ -3,6 +3,8 @@
 #include "tty.h"
 #include "string.h"
 #include "io.h"
+#include "stack.h"
+#include "gdt.h"
 
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
@@ -11,8 +13,10 @@ size_t krow;
 size_t kcolumn;
 uint8_t kcolor;
 uint16_t *kbuffer;
+uint8_t cursor_x = 0;
+uint8_t cursor_y = 0;
 
-void kinitialize(void)
+void kinit(void)
 {
 	krow = 0;
 	kcolumn = 0;
@@ -26,8 +30,9 @@ void kinitialize(void)
 	}
 }
 
-void set_cursor(uint16_t pos)
+void set_cursor(void)
 {
+	uint16_t pos = krow * 80 + kcolumn;
     outb(0x3D4, 14);
     outb(0x3D5, (pos >> 8));
     outb(0x3D4, 15);
@@ -44,13 +49,12 @@ void kputchar(char c)
 	} else {
 		index = krow * VGA_WIDTH + kcolumn;
 		kbuffer[index] = vga_entry(c, kcolor);
-		set_cursor(index + 1);
+		++kcolumn;
 	}
-	if (++kcolumn == VGA_WIDTH) {
+	if (kcolumn == VGA_WIDTH) {
 		kcolumn = 0;
-		if (++krow == VGA_HEIGHT)
-			krow = 0;
 	}
+	set_cursor();
 }
 
 void kwrite(const char *str, size_t size)
@@ -70,7 +74,7 @@ void kputstr(const char *str)
 static void banner(void)
 {
 	kcolor = vga_entry_color(VGA_LIGHT_CYAN, VGA_BLACK);
-	kputstr("\n@@@  @@@  @@@@@@@@   @@@@@@           @@@    @@@@@@\n");
+	kputstr("@@@  @@@  @@@@@@@@   @@@@@@           @@@    @@@@@@\n");
 	kputstr("@@@  @@@  @@@@@@@@  @@@@@@@          @@@@   @@@@@@@@\n");
 	kputstr("@@!  !@@  @@!       !@@             @@!@!        @@@\n");
 	kputstr("!@!  @!!  !@!       !@!            !@!!@!       @!@\n");
@@ -84,10 +88,11 @@ static void banner(void)
 
 void kernel_main(void)
 {
-	kinitialize();
+	kinit();
 	banner();
 
 	kcolor = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
-	printk("Hello, world! %d %c", 42, '\n');
-	printk("%c%c", '$', ' ');
+	printk("%08x\n", get_esp());
+	printk("%08x\n", get_ebp());
+	//printk("%c%c", '$', ' ');
 }
