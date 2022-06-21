@@ -1,22 +1,10 @@
 #ifndef STACK_H
 #define STACK_H
+#include <stddef.h>
 
-static inline int get_esp(void)
-{
-	int ret;
+#define GET_EBP(x) asm volatile("mov %%ebp, %0" : "=r"(x) ::)
+#define GET_ESP(x) asm volatile("mov %%esp, %0" : "=r"(x) ::)
 
-	asm volatile("mov %%esp, %0" : "=r"(ret));
-
-	return ret;
-}
-
-static inline int get_ebp(void)
-{
-	int ret;
-
-	asm volatile("mov %%ebp, %0" : "=r"(ret));
-
-	return ret;
-}
+void print_memory(const void *addr, size_t size);
 
 #endif

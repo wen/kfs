@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 
+#define ISPRINT(c)	((c) >= 0x20 && (c) <= 0x7e)
 #define TODIGIT(c)	((c) - '0')
 #define ISDIGIT(c)	((unsigned)TODIGIT(c) <= 9)
 #define TOCHAR(n)	((n) + '0')

@@ -2,6 +2,7 @@
 #include "tty.h"
 #include "string.h"
 #include "shell.h"
+#include "stack.h"
 
 static const char qwerty_kb_table[] = {
 	0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', 0,
@@ -68,14 +69,22 @@ static void getline(char *buf)
 void shell(void)
 {
 	char buf[BUF_SIZE] = {0};
+	uintptr_t ebp;
+	uintptr_t esp;
 
 	while (1) {
 		kputchar('$');
 		kputchar(' ');
 		getline(buf);
 		if (strlen(buf) > 0) {
-			if (!strcmp(buf, "halt") || !strcmp(buf, "shutdown"))
+			if (!strcmp(buf, "halt") || !strcmp(buf, "shutdown")) {
 				shutdown();
+			} else if (!strcmp(buf, "stack")) {
+				GET_EBP(ebp);
+				GET_ESP(esp);
+				printk("EBP: %08X\nESP: %08X\n", ebp, esp);
+				print_memory((void*)esp, ebp - esp);
+			}
 			memset(buf, 0, BUF_SIZE);
 		}
 	}
