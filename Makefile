@@ -2,10 +2,20 @@ NAME := kfs.bin
 CC := i686-elf-gcc
 CFLAGS := -Wall -Wextra -ffreestanding -O2 -I./kernel -I./libc
 LFLAGS := -nodefaultlibs -nostdlib
+HDR := kernel/vga.h \
+	   kernel/tty.h \
+	   kernel/io.h \
+	   kernel/gdt.h \
+	   kernel/idt.h \
+	   kernel/stack.h \
+	   kernel/printklocal.h \
+	   libc/string.h
 SRCS := kernel/kernel.c \
 		kernel/printk.c \
 		kernel/ultoa.c \
 		kernel/ujtoa.c \
+		kernel/gdt.c \
+		kernel/idt.c \
 		libc/memset.c \
 		libc/memcpy.c \
 		libc/memcmp.c \
@@ -13,7 +23,7 @@ SRCS := kernel/kernel.c \
 		libc/strchr.c \
 		libc/strnlen.c
 OBJS := $(SRCS:.c=.o)
-ASM_SRCS := kernel/boot.s
+ASM_SRCS := kernel/isr.s
 ASM_OBJS := $(ASM_SRCS:.s=.o)
 RM := /bin/rm -f
 
@@ -25,14 +35,20 @@ iso: $(NAME)
 	cp $(NAME) iso/boot/$(NAME)
 	grub-mkrescue -o kfs.iso iso
 
-$(NAME): $(ASM_OBJS) $(OBJS) linker.ld
-	$(CC) -T linker.ld -o $@ $(CFLAGS) $(LFLAGS) $(ASM_OBJS) $(OBJS) -lgcc
+$(NAME): boot.o $(ASM_OBJS) $(OBJS) linker.ld
+	$(CC) -T linker.ld -o $@ $(CFLAGS) $(LFLAGS) boot.o $(ASM_OBJS) $(OBJS) -lgcc
 
-$(ASM_OBJS): $(ASM_SRCS)
-	i686-elf-as $< -o $@
+boot.o: boot.s
+	i686-elf-as boot.s -o $@
+
+%.o: %.s
+	nasm -f elf32 $< -o $@
+
+%.o: %.c $(HDR)
+	$(CC) -c $(CFLAGS) $< -o $@
 
 clean:
-	$(RM) $(ASM_OBJS) $(OBJS)
+	$(RM) boot.o $(ASM_OBJS) $(OBJS)
 
 fclean: clean
 	$(RM) $(NAME)
