@@ -18,9 +18,8 @@ static void putstr_hex(const unsigned char *str, size_t size)
 void print_memory(const void *addr, size_t size)
 {
 	const unsigned char *ptr = addr;
-	size_t i = 0;
 
-	while (i < size) {
+	for (size_t i = 0; i < size; ++i, ++ptr) {
 		if (i % 16 == 0)
 			printk("0x%08X  ", ptr);
 		printk("%02hhx", *ptr);
@@ -37,7 +36,5 @@ void print_memory(const void *addr, size_t size)
 			kputstr("   ");
 			putstr_hex(ptr - size % 16 + 1, size % 16);
 		}
-		++ptr;
-		++i;
 	}
 }
