@@ -22,6 +22,16 @@ static const char qwerty_shift_kb_table[] = {
 	'0', '.', '6', 0, 0, 0, 0, 0
 };
 
+void reboot()
+{
+	uint8_t good = 0x02;
+
+	while (good & 0x02)
+		good = inb(0x64);
+	outb(0x64, 0xFE);
+	shutdown();
+}
+
 static void getline(char *buf)
 {
 	uint16_t keycode = 0;
@@ -79,6 +89,8 @@ void shell(void)
 		if (strlen(buf) > 0) {
 			if (!strcmp(buf, "halt") || !strcmp(buf, "shutdown")) {
 				shutdown();
+			} else if (!strcmp(buf, "reboot")) {
+				reboot();
 			} else if (!strcmp(buf, "stack")) {
 				GET_EBP(ebp);
 				GET_ESP(esp);
