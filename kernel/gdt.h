@@ -4,8 +4,8 @@
 #include <stdint.h>
 
 #define SEG_DESCTYPE(x)  	((x) << 0x04)
-#define SEG_PRES(x)      	((x) << 0x07)
-#define SEG_SAVL(x)      	((x) << 0x0C)
+#define SEG_PRES(x)			((x) << 0x07)
+#define SEG_SAVL(x)			((x) << 0x0C)
 #define SEG_LONG(x)			((x) << 0x0D)
 #define SEG_SIZE(x)			((x) << 0x0E)
 #define SEG_GRAN(x)			((x) << 0x0F)
@@ -51,6 +51,13 @@
 #define GDT_STACK_PL3 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
                       SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
                       SEG_PRIV(3)     | SEG_DATA_RDWREXPD
+
+struct gdt_ptr_struct
+{
+	uint16_t limit;
+	uint32_t base;
+} __attribute__((packed));
+typedef struct gdt_ptr_struct gdt_ptr_t;
 
 void gdt_init();
 

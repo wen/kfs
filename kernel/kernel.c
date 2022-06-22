@@ -105,6 +105,8 @@ void kernel_main(void)
 	kcolor = vga_entry_color(VGA_LIGHT_CYAN, VGA_BLACK);
 	banner();
 
+	gdt_init();
+
 	kcolor = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
 	shell();
 }
