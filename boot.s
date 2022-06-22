@@ -21,7 +21,7 @@ stack_top:
 .type _start, @function
 _start:
 	mov $stack_top, %esp
-	call kernel_main # call C main function
+	call kmain
 	cli
 1:	hlt
 	jmp 1b

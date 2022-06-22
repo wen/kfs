@@ -2,7 +2,7 @@
 #include "gdt.h"
 #include "shell.h"
 
-void kernel_main(void)
+void kmain(void)
 {
 	kinit();
 
