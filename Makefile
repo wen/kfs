@@ -2,10 +2,10 @@ NAME := kfs.bin
 CC := i686-elf-gcc
 CFLAGS := -Wall -Wextra -ffreestanding -O2 -I./kernel -I./libc
 LFLAGS := -nodefaultlibs -nostdlib
-HDR := $(shell find . -type f -name *.h)
-SRCS := $(shell find . -type f -name *.c)
+HDR := $(shell find . -type f -name "*.h")
+SRCS := $(shell find . -type f -name "*.c")
 OBJS := $(SRCS:.c=.o)
-ASM_SRCS := $(shell find kernel -type f -name *.s)
+ASM_SRCS := $(shell find kernel -type f -name "*.s")
 ASM_OBJS := $(ASM_SRCS:.s=.o)
 RM := /bin/rm -f
 
