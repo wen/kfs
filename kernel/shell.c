@@ -91,6 +91,8 @@ void shell(void)
 				shutdown();
 			} else if (!strcmp(buf, "reboot")) {
 				reboot();
+			} else if (!strcmp(buf, "clear")) {
+				clear_screen();
 			} else if (!strcmp(buf, "stack")) {
 				GET_EBP(ebp);
 				GET_ESP(esp);

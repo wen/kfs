@@ -38,6 +38,17 @@ void set_cursor(void)
     outb(0x3D5, pos);
 }
 
+void clear_screen(void)
+{
+	uint8_t clear_color = vga_entry_color(VGA_LIGHT_GREY, VGA_BLACK);
+
+	for (uint16_t i = 0; i < VGA_WIDTH*VGA_HEIGHT; ++i)
+		kbuffer[i] = vga_entry(' ', clear_color);
+	cursor_x = 0;
+	cursor_y = 0;
+	set_cursor();
+}
+
 void scroll(void)
 {
 	if (cursor_y >= 25) {
