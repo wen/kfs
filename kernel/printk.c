@@ -346,7 +346,7 @@ int printk(const char *fmt, ...)
 
 	va_start(ap, fmt);
 
-	memset(&pf, '\0', sizeof(pf));
+	bzero(&pf, sizeof(pf));
 	pf.fmt = (char *)fmt;
 	va_copy(pf.ap, ap);
 	while (1) {

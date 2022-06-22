@@ -104,7 +104,7 @@ void shell(void)
 			} else if (!memcmp(buf, "dump", 4) && strlen(buf+5) == 8) {
 				print_memory((void*)strtop(buf+5), 128);
 			}
-			memset(buf, 0, BUF_SIZE);
+			bzero(buf, BUF_SIZE);
 		}
 	}
 }
