@@ -2,6 +2,7 @@
 #define STRING_H
 
 #include <stddef.h>
+#include <stdint.h>
 
 #define ISPRINT(c)	((c) >= 0x20 && (c) <= 0x7e)
 #define TODIGIT(c)	((c) - '0')
@@ -15,5 +16,6 @@ size_t strlen(const char *s);
 int strcmp(const char *s1, const char *s2);
 char *strchr(const char *s, int c);
 size_t strnlen(const char *s, size_t maxlen);
+uintptr_t strtop(const char *s);
 
 #endif

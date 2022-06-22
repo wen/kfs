@@ -1,8 +1,9 @@
+#include "shell.h"
 #include "io.h"
 #include "tty.h"
 #include "string.h"
-#include "shell.h"
 #include "stack.h"
+#include "gdt.h"
 
 static const char qwerty_kb_table[] = {
 	0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', 0,
@@ -96,8 +97,12 @@ void shell(void)
 			} else if (!strcmp(buf, "stack")) {
 				GET_EBP(ebp);
 				GET_ESP(esp);
-				printk("EBP: 0x%08X\nESP: 0x%08X\n", ebp, esp);
+				printk("EBP: 0x%08X  ESP: 0x%08X\n", ebp, esp);
 				print_memory((void*)esp, ebp - esp);
+			} else if (!strcmp(buf, "gdt")) {
+				print_memory((void*)GDT_PTR, 32);
+			} else if (!memcmp(buf, "dump", 4) && strlen(buf+5) == 8) {
+				print_memory((void*)strtop(buf+5), 128);
 			}
 			memset(buf, 0, BUF_SIZE);
 		}

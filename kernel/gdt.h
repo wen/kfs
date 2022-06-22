@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#define GDT_PTR				0x00000800
 #define SEG_DESCTYPE(x)  	((x) << 0x04)
 #define SEG_PRES(x)			((x) << 0x07)
 #define SEG_SAVL(x)			((x) << 0x0C)
