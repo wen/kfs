@@ -93,7 +93,7 @@ void kputstr(const char *str)
 
 void banner(void)
 {
-	kcolor = vga_entry_color(VGA_LIGHT_CYAN, VGA_BLACK);
+	kcolor = vga_entry_color(VGA_LIGHT_GREEN, VGA_BLACK);
 	kputstr("@@@  @@@  @@@@@@@@   @@@@@@           @@@    @@@@@@\n");
 	kputstr("@@@  @@@  @@@@@@@@  @@@@@@@          @@@@   @@@@@@@@\n");
 	kputstr("@@!  !@@  @@!       !@@             @@!@!        @@@\n");

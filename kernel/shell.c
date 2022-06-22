@@ -96,7 +96,7 @@ void shell(void)
 			} else if (!strcmp(buf, "stack")) {
 				GET_EBP(ebp);
 				GET_ESP(esp);
-				printk("EBP: %08X\nESP: %08X\n", ebp, esp);
+				printk("EBP: 0x%08X\nESP: 0x%08X\n", ebp, esp);
 				print_memory((void*)esp, ebp - esp);
 			}
 			memset(buf, 0, BUF_SIZE);
