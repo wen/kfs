@@ -1,10 +1,28 @@
 # Kernel from Scratch
 
-## Multiboot Specification
-https://www.gnu.org/software/grub/manual/multiboot/multiboot.html
+![](https://i.v2ex.co/IqR2ZMtY.png)
 
-## GCC Option Summary
-https://gcc.gnu.org/onlinedocs/gcc-12.1.0/gcc/Option-Summary.html
+## How to launch
+```
+qemu-system-i386 -kernel kfs.bin
+```
+OR
+```
+qemu-system-i386 -cdrom kfs.iso
+```
 
-## VGA Text UI
-https://wiki.osdev.org/Text_UI
+## Usage
+```
+$ halt
+```
+```
+$ reboot
+```
+```
+$ clear
+```
+Clear the screen.
+```
+$ dump 00000800
+```
+Display memory contents in hexadecimal.
