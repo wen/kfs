@@ -21,7 +21,6 @@ size_t strlen(const char *s);
 int strcmp(const char *s1, const char *s2);
 char *strchr(const char *s, int c);
 size_t strnlen(const char *s, size_t maxlen);
-int atoi(const char *s);
-uintptr_t strtop(const char *s);
+long strtol(const char *str, char **end, int base);
 
 #endif

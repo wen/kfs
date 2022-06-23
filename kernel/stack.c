@@ -15,9 +15,9 @@ static void putstr_hex(const unsigned char *str, size_t size)
 	kputchar('\n');
 }
 
-void print_memory(const void *addr, size_t size)
+void print_memory(const uintptr_t addr, size_t size)
 {
-	const unsigned char *ptr = addr;
+	const unsigned char *ptr = (unsigned char*)addr;
 
 	for (size_t i = 0; i < size; ++i, ++ptr) {
 		if (i % 16 == 0)

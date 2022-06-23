@@ -98,11 +98,12 @@ void shell(void)
 				GET_EBP(ebp);
 				GET_ESP(esp);
 				printk("EBP: 0x%08X  ESP: 0x%08X\n", ebp, esp);
-				print_memory((void*)esp, ebp - esp);
+				print_memory(esp, ebp - esp);
 			} else if (!strcmp(buf, "gdt")) {
-				print_memory((void*)GDT_PTR, 32);
-			} else if (!memcmp(buf, "dump", 4) && strlen(buf+5) == 8) {
-				print_memory((void*)strtop(buf+5), 128);
+				print_memory(GDT_PTR, 32);
+			} else if (!memcmp(buf, "dump", 4) &&
+				strlen(buf+5) >= 1 && strlen(buf+5) <= 10) {
+				print_memory(strtol(buf+5, NULL, 16), 128);
 			}
 			bzero(buf, BUF_SIZE);
 		}
