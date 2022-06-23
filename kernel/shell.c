@@ -67,6 +67,7 @@ static void getline(char *buf)
 					buf[i] = c;
 				}
 				if (++i >= BUF_SIZE) {
+					kputchar('\n');
 					buf[BUF_SIZE-1] = '\0';
 					outb(KEYBOARD_PORT, 0);
 					return;
