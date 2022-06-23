@@ -11,7 +11,7 @@ static const char qwerty_kb_table[] = {
 	's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', 0, '\\', 'z', 'x',
 	'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, '*', 0, ' ', 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3',
-	'0', '.', '6', 0, 0, 0, 0, 0
+	'0', '.', 0, 0, 0, 0, 0, 0
 };
 
 static const char qwerty_shift_kb_table[] = {
@@ -20,7 +20,7 @@ static const char qwerty_shift_kb_table[] = {
 	'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '\"', '~', 0, '|', 'Z', 'X',
 	'C', 'V', 'B', 'N', 'M', '<', '>', '?', 0, '*', 0, ' ', 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3',
-	'0', '.', '6', 0, 0, 0, 0, 0
+	'0', '.', 0, 0, 0, 0, 0, 0
 };
 
 void reboot()
@@ -50,7 +50,7 @@ static void getline(char *buf)
 			shift = 0;
 			continue;
 		}
-		if (keycode > 0 && keycode <= 128) {
+		if (keycode > 0 && keycode <= 0x58) {
 			if (keycode == 0x1C) {
 				kputchar('\n');
 				outb(KEYBOARD_PORT, 0);
@@ -84,8 +84,7 @@ void shell(void)
 	uintptr_t esp;
 
 	while (1) {
-		kputchar('$');
-		kputchar(' ');
+		kputstr("kfs $ ");
 		getline(buf);
 		if (strlen(buf) > 0) {
 			if (!strcmp(buf, "halt") || !strcmp(buf, "shutdown")) {
