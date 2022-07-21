@@ -101,7 +101,7 @@ void shell(void)
 				print_memory(esp, ebp - esp);
 			} else if (!strcmp(buf, "gdt")) {
 				print_memory(GDT_PTR, 32);
-			} else if (!memcmp(buf, "dump", 4) &&
+			} else if (!memcmp(buf, "dump ", 5) &&
 				strlen(buf+5) >= 1 && strlen(buf+5) <= 10) {
 				print_memory(strtol(buf+5, NULL, 16), 128);
 			}
