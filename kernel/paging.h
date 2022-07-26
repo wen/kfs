@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#define PAGE_SIZE 0x1000
 #define INDEX_FROM_BIT(x) (x/32)
 #define OFFSET_FROM_BIT(x) (x%32)
 
@@ -25,5 +26,7 @@ typedef struct page_dir_s {
 	uint32_t tables_phys[1024];
 	uint32_t phys;
 } page_dir_t;
+
+void paging_init(void);
 
 #endif
