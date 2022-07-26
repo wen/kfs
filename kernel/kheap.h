@@ -1,5 +1,5 @@
-#ifndef HEAP_H
-#define HEAP_H
+#ifndef KHEAP_H
+#define KHEAP_H
 
 #include <stdint.h>
 

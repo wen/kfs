@@ -1,4 +1,4 @@
-#include "heap.h"
+#include "kheap.h"
 #include "paging.h"
 
 extern uint32_t end;

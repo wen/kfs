@@ -1,5 +1,5 @@
 #include "paging.h"
-#include "heap.h"
+#include "kheap.h"
 #include "string.h"
 #include "isr.h"
 
