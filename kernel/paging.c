@@ -13,7 +13,7 @@ page_dir_t *current_dir = 0;
 
 static void set_frame(uint32_t frame_addr)
 {
-	uint32_t frame = frame_addr / 0x1000;
+	uint32_t frame = frame_addr / PAGE_SIZE;
 	uint32_t idx = INDEX_FROM_BIT(frame);
 	uint32_t off = OFFSET_FROM_BIT(frame);
 	frames[idx] |= (0x1 << off);
@@ -21,7 +21,7 @@ static void set_frame(uint32_t frame_addr)
 
 static void clear_frame(uint32_t frame_addr)
 {
-	uint32_t frame = frame_addr / 0x1000;
+	uint32_t frame = frame_addr / PAGE_SIZE;
 	uint32_t idx = INDEX_FROM_BIT(frame);
 	uint32_t off = OFFSET_FROM_BIT(frame);
 	frames[idx] &= ~(0x1 << off);
@@ -30,7 +30,7 @@ static void clear_frame(uint32_t frame_addr)
 /*
 static uint32_t test_frame(uint32_t frame_addr)
 {
-	uint32_t frame = frame_addr / 0x1000;
+	uint32_t frame = frame_addr / PAGE_SIZE;
 	uint32_t idx = INDEX_FROM_BIT(frame);
 	uint32_t off = OFFSET_FROM_BIT(frame);
 
@@ -58,7 +58,7 @@ void alloc_frame(page_t *page, int is_kernel, int is_writable)
 	uint32_t idx = first_frame();
 	if (idx == (uint32_t)-1)
 	{} // PANIC
-	set_frame(idx * 0x1000);
+	set_frame(idx * PAGE_SIZE);
 	page->present = 1;
 	page->rw = !!is_writable;
 	page->user = !is_kernel;
@@ -92,7 +92,7 @@ void switch_page_dir(page_dir_t *dir)
 
 page_t *get_page(uint32_t addr, int make, page_dir_t *dir)
 {
-	addr /= 0x1000;
+	addr /= PAGE_SIZE;
 	uint32_t index = addr / 1024;
 	if (dir->tables[index])
 		return &dir->tables[index]->pages[addr%1024];
@@ -113,9 +113,7 @@ void page_fault(registers_t regs)
 
 void paging_init(void)
 {
-	uint32_t mem_end_page = 0x1000000;
-
-	nframes = mem_end_page / 0x1000;
+	nframes = 0x1000000 / PAGE_SIZE;
 	frames = (uint32_t*)kmalloc(INDEX_FROM_BIT(nframes));
 	bzero(frames, INDEX_FROM_BIT(nframes));
 

@@ -1,4 +1,5 @@
 #include "heap.h"
+#include "paging.h"
 
 extern uint32_t end;
 uint32_t placement_addr = (uint32_t)&end;
@@ -7,7 +8,7 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys)
 {
 	if (align == 1 && (placement_addr & 0xfffff000)) {
 		placement_addr &= 0xfffff000;
-		placement_addr += 0x1000;
+		placement_addr += PAGE_SIZE;
 	}
 	if (phys)
 		*phys = placement_addr;
