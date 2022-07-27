@@ -177,3 +177,58 @@ void *alloc(uint32_t size, uint8_t page_align, heap_t *heap)
 
 	return (void*)((uint32_t)block_header+sizeof(header_t));
 }
+
+void free(void *p, heap_t *heap)
+{
+	if (p == 0)
+		return;
+
+	header_t *header = (header_t*)((uint32_t)p - sizeof(header_t));
+	footer_t *footer = (footer_t*)((uint32_t)header + header->size - sizeof(footer_t));
+
+	header->is_hole = 1;
+
+	char do_add = 1;
+
+	footer_t *test_footer = (footer_t*)((uint32_t)header - sizeof(footer_t));
+	if (test_footer->magic == HEAP_MAGIC && test_footer->header->is_hole == 1) {
+		uint32_t cache_size = header->size;
+		header = test_footer->header;
+		footer->header = header;
+		header->size += cache_size;
+		do_add = 0;
+	}
+
+	header_t *test_header = (header_t*)((uint32_t)footer + sizeof(footer_t));
+	if (test_header->magic == HEAP_MAGIC && test_header->is_hole) {
+		header->size += test_header->size;
+		test_footer = (footer_t*)((uint32_t)test_header + test_header->size - sizeof(footer_t));
+		footer = test_footer;
+		uint32_t it = 0;
+		while ((it < heap->index.size) &&
+				(lookup_ordered_array(it, &heap->index) != (void*)test_header))
+			it++;
+		remove_ordered_array(it, &heap->index);
+	}
+
+	if ((uint32_t)footer+sizeof(footer_t) == heap->end_addr) {
+		uint32_t old_length = heap->end_addr - heap->start_addr;
+		uint32_t new_length = shrink((uint32_t)header - heap->start_addr, heap);
+		if (header->size - (old_length-new_length) > 0) {
+			header->size -= old_length-new_length;
+			footer = (footer_t*)((uint32_t)header + header->size - sizeof(footer_t));
+			footer->magic = HEAP_MAGIC;
+			footer->header = header;
+		} else {
+			uint32_t it = 0;
+			while ((it < heap->index.size) &&
+					(lookup_ordered_array(it, &heap->index) != (void*)test_header))
+				it++;
+			if (it < heap->index.size)
+				remove_ordered_array(it, &heap->index);
+		}
+	}
+
+	if (do_add == 1)
+		insert_ordered_array((void*)header, &heap->index);
+}
