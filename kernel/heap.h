@@ -28,4 +28,8 @@ typedef struct heap_s {
 	uint8_t readonly;
 } heap_t;
 
+heap_t *create_heap(uint32_t, uint32_t, uint32_t, uint8_t, uint8_t);
+void *alloc(uint32_t size, uint8_t page_align, heap_t *heap);
+void free(void *p, heap_t *heap);
+
 #endif
