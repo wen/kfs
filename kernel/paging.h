@@ -28,5 +28,8 @@ typedef struct page_dir_s {
 } page_dir_t;
 
 void paging_init(void);
+page_t *get_page(uint32_t addr, int make, page_dir_t *dir);
+void alloc_frame(page_t *page, int is_kernel, int is_writable);
+void free_frame(page_t *page);
 
 #endif
