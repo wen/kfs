@@ -3,6 +3,8 @@
 #include "heap.h"
 #include "string.h"
 #include "isr.h"
+#include "panic.h"
+#include "tty.h"
 
 extern uint32_t placement_addr;
 extern heap_t *kheap;
@@ -48,7 +50,7 @@ void alloc_frame(page_t *page, int is_kernel, int is_writable)
 		return;
 	uint32_t idx = first_frame();
 	if (idx == (uint32_t)-1)
-	{} // PANIC
+		panic("no free frames");
 	set_frame(idx * PAGE_SIZE);
 	page->present = 1;
 	page->rw = !!is_writable;
@@ -84,7 +86,16 @@ page_t *get_page(uint32_t addr, int make, page_dir_t *dir)
 
 void page_fault(registers_t regs)
 {
-	(void)regs;
+	uintptr_t faulting_addr;
+	asm volatile ("mov %%cr2, %0" : "=r" (faulting_addr));
+
+	printk("present[%d], rw[%d], user[%d], rsvd[%d]\n at 0x%08x\n", \
+			regs.err_code & 0x1, \
+			regs.err_code & 0x2, \
+			regs.err_code & 0x4, \
+			regs.err_code & 0x8, \
+			faulting_addr);
+	panic("page fault");
 }
 
 void paging_init(void)
