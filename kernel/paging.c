@@ -10,8 +10,8 @@ extern void paging_flush(uint32_t);
 
 uint32_t *frames;
 uint32_t nframes;
-page_dir_t *kernel_dir = 0;
-page_dir_t *current_dir = 0;
+page_dir_t *kernel_dir;
+page_dir_t *current_dir;
 
 static void set_frame(uint32_t frame_addr)
 {
@@ -28,17 +28,6 @@ static void clear_frame(uint32_t frame_addr)
 	uint32_t off = OFFSET_FROM_BIT(frame);
 	frames[idx] &= ~(0x1 << off);
 }
-
-/*
-static uint32_t test_frame(uint32_t frame_addr)
-{
-	uint32_t frame = frame_addr / PAGE_SIZE;
-	uint32_t idx = INDEX_FROM_BIT(frame);
-	uint32_t off = OFFSET_FROM_BIT(frame);
-
-	return frames[idx] & (0x1 << off);
-}
-*/
 
 static uint32_t first_frame(void)
 {
@@ -64,8 +53,6 @@ void alloc_frame(page_t *page, int is_kernel, int is_writable)
 	page->present = 1;
 	page->rw = !!is_writable;
 	page->user = !is_kernel;
-	//page->rw = is_writable ? 1 : 0;
-	//page->user = !is_kernel ? 0 : 1;
 	page->frame = idx;
 }
 
@@ -78,19 +65,6 @@ void free_frame(page_t *page)
 	clear_frame(frame);
 	page->frame = 0x0;
 }
-
-/*
-void switch_page_dir(page_dir_t *dir)
-{
-	uint32_t cr0;
-
-	current_dir = dir;
-	asm volatile("mov %0, %%cr3":: "r"(&dir->tables_phys));
-	asm volatile("mov %%cr0, %0": "=r"(cr0));
-	cr0 |= 0x80000000;
-	asm volatile("mov %0, %%cr0":: "r"(cr0));
-}
-*/
 
 page_t *get_page(uint32_t addr, int make, page_dir_t *dir)
 {
@@ -134,6 +108,5 @@ void paging_init(void)
 
 	register_interrupt_handler(14, page_fault);
 	paging_flush((uint32_t)kernel_dir->tables_phys);
-	//switch_page_dir(kernel_dir);
 	kheap = create_heap(KHEAP_START, KHEAP_START + KHEAP_INITIAL_SIZE, 0xcffff000, 0, 0);
 }
