@@ -7,7 +7,8 @@
 #define HEAP_INDEX_SIZE	0x20000
 #define HEAP_MAGIC		0x0000002A
 #define HEAP_MIN_SIZE	0x70000
-#define IS_ALIGNED(x)	(!(x & 0x00000fff))
+#define IS_ALIGNED(x)	(!((x) & 0x00000fff))
+#define ALIGN(x)		(((x) + 0x00000fff) & 0xfffff000)
 
 typedef struct header_s {
 	uint32_t magic;

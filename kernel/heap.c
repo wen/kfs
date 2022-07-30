@@ -13,7 +13,7 @@ static int32_t find_smallest_hole(uint32_t size, uint8_t page_align, heap_t *hea
 		if (page_align > 0) {
 			uint32_t location = (uint32_t)header;
 			int32_t offset = 0;
-			if ((location + sizeof(header_t)) & 0xfffff000)
+			if (!IS_ALIGNED(location + sizeof(header_t)))
 				offset = PAGE_SIZE - (location + sizeof(header_t)) % PAGE_SIZE;
 			int32_t hole_size = (int32_t)header->size - offset;
 			if (hole_size >= (int32_t)size)
@@ -42,10 +42,8 @@ heap_t *create_heap(uint32_t start, uint32_t end,
 	heap->index = place_ordered_array((void*)start, HEAP_INDEX_SIZE, &header_t_less_than);
 
 	start += sizeof(type_t) * HEAP_INDEX_SIZE;
-	if (!IS_ALIGNED(start)) {
-		start &= 0xfffff000;
-		start += PAGE_SIZE;
-	}
+	if (!IS_ALIGNED(start))
+		start = ALIGN(start);
 
 	heap->start_addr = start;
 	heap->end_addr = end;
@@ -64,10 +62,8 @@ heap_t *create_heap(uint32_t start, uint32_t end,
 
 static void expand(uint32_t new_size, heap_t *heap)
 {
-	if (new_size & 0xfffff000) {
-		new_size &= 0xfffff000;
-		new_size += PAGE_SIZE;
-	}
+	if (!IS_ALIGNED(new_size))
+		new_size = ALIGN(new_size);
 
 	for (uint32_t i = heap->end_addr - heap->start_addr; i < new_size; i += PAGE_SIZE)
 		alloc_frame(get_page(heap->start_addr+i, 1, kernel_dir),
@@ -78,10 +74,8 @@ static void expand(uint32_t new_size, heap_t *heap)
 
 static uint32_t shrink(uint32_t new_size, heap_t *heap)
 {
-	if (new_size & PAGE_SIZE) {
-		new_size &= PAGE_SIZE;
-		new_size += PAGE_SIZE;
-	}
+	if (!IS_ALIGNED(new_size))
+		new_size = ALIGN(new_size);
 	if (new_size < HEAP_MIN_SIZE)
 		new_size = HEAP_MIN_SIZE;
 
@@ -141,7 +135,7 @@ void *alloc(uint32_t size, uint8_t page_align, heap_t *heap)
 		size += orig_hole_size-new_size;
 		new_size = orig_hole_size;
 	}
-	if (page_align && (orig_hole_pos & 0xfffff000)) {
+	if (page_align && !IS_ALIGNED(orig_hole_pos)) {
 		uint32_t new_location = orig_hole_pos + PAGE_SIZE - (orig_hole_pos & 0xfff) - sizeof(header_t);
 		header_t *hole_header = (header_t *)orig_hole_pos;
 		hole_header->size = PAGE_SIZE - (orig_hole_pos & 0xfff) - sizeof(header_t);

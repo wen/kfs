@@ -18,10 +18,9 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys)
 		return (uint32_t)addr;
 	}
 
-	if (align == 1 && !IS_ALIGNED(placement_addr)) {
-		placement_addr &= 0xfffff000;
-		placement_addr += PAGE_SIZE;
-	}
+	if (align == 1 && !IS_ALIGNED(placement_addr))
+		placement_addr = ALIGN(placement_addr);
+
 	if (phys)
 		*phys = placement_addr;
 	uint32_t tmp = placement_addr;
