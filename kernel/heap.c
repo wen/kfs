@@ -34,12 +34,15 @@ static int8_t header_t_less_than(void *a, void *b)
 heap_t *create_heap(uint32_t start, uint32_t end,
 		uint32_t max, uint8_t supervisor, uint8_t readonly)
 {
+	if (!IS_ALIGNED(start) || !IS_ALIGNED(end))
+		return (void*)0;
+
 	heap_t *heap = (heap_t*)kmalloc(sizeof(heap_t));
 
 	heap->index = place_ordered_array((void*)start, HEAP_INDEX_SIZE, &header_t_less_than);
 
-	start += sizeof(type_t)*HEAP_INDEX_SIZE;
-	if (start & 0xfffff000) {
+	start += sizeof(type_t) * HEAP_INDEX_SIZE;
+	if (!IS_ALIGNED(start)) {
 		start &= 0xfffff000;
 		start += PAGE_SIZE;
 	}

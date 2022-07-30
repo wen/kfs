@@ -16,17 +16,17 @@ uint32_t kmalloc_int(uint32_t sz, int align, uint32_t *phys)
 			*phys = page->frame * PAGE_SIZE + ((uint32_t)addr & 0xfff);
 		}
 		return (uint32_t)addr;
-	} else {
-		if (align == 1 && (placement_addr & 0xfffff000)) {
-			placement_addr &= 0xfffff000;
-			placement_addr += PAGE_SIZE;
-		}
-		if (phys)
-			*phys = placement_addr;
-		uint32_t tmp = placement_addr;
-		placement_addr += sz;
-		return tmp;
 	}
+
+	if (align == 1 && !IS_ALIGNED(placement_addr)) {
+		placement_addr &= 0xfffff000;
+		placement_addr += PAGE_SIZE;
+	}
+	if (phys)
+		*phys = placement_addr;
+	uint32_t tmp = placement_addr;
+	placement_addr += sz;
+	return tmp;
 }
 
 void kfree(void *p)
