@@ -2,7 +2,6 @@
 #include "kheap.h"
 #include "heap.h"
 #include "string.h"
-#include "isr.h"
 #include "panic.h"
 #include "tty.h"
 
@@ -84,20 +83,6 @@ page_t *get_page(uint32_t addr, int make, page_dir_t *dir)
 	return (void*)0;
 }
 
-void page_fault(registers_t regs)
-{
-	uintptr_t faulting_addr;
-	asm volatile ("mov %%cr2, %0" : "=r" (faulting_addr));
-
-	printk("present[%d], rw[%d], user[%d], rsvd[%d]\n at 0x%08x\n", \
-			regs.err_code & 0x1, \
-			regs.err_code & 0x2, \
-			regs.err_code & 0x4, \
-			regs.err_code & 0x8, \
-			faulting_addr);
-	panic("page fault");
-}
-
 void paging_init(void)
 {
 	nframes = 0x1000000 / PAGE_SIZE;
@@ -117,7 +102,6 @@ void paging_init(void)
 	for (uint32_t i = KHEAP_START; i < KHEAP_START + KHEAP_INITIAL_SIZE; i += PAGE_SIZE)
 		alloc_frame(get_page(i, 1, kernel_dir), 0, 0);
 
-	register_interrupt_handler(14, page_fault);
 	paging_flush((uint32_t)kernel_dir->tables_phys);
 	kheap = create_heap(KHEAP_START, KHEAP_START + KHEAP_INITIAL_SIZE, 0xcffff000, 0, 0);
 }
