@@ -3,9 +3,10 @@
 
 #include <stdint.h>
 
-#define PAGE_SIZE 0x1000
-#define INDEX_FROM_BIT(x) (x/32)
-#define OFFSET_FROM_BIT(x) (x%32)
+#define PAGE_SIZE 			0x1000
+#define MEM_SIZE			0x1000000
+#define INDEX_FROM_BIT(x)	(x / 32)
+#define OFFSET_FROM_BIT(x)	(x % 32)
 
 typedef struct page_s {
 	uint32_t present	: 1;
@@ -23,8 +24,8 @@ typedef struct page_tab_s {
 
 typedef struct page_dir_s {
 	page_tab_t *tables[1024];
-	uint32_t tables_phys[1024];
-	uint32_t phys;
+	uintptr_t tables_phys[1024];
+	uintptr_t phys;
 } page_dir_t;
 
 void paging_init(void);

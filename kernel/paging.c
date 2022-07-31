@@ -5,9 +5,9 @@
 #include "panic.h"
 #include "tty.h"
 
-extern uint32_t placement_addr;
+extern uintptr_t placement_addr;
 extern heap_t *kheap;
-extern void paging_flush(uint32_t);
+extern void paging_flush(uintptr_t);
 
 uint32_t *frames;
 uint32_t nframes;
@@ -85,11 +85,11 @@ page_t *get_page(uint32_t addr, int make, page_dir_t *dir)
 
 void paging_init(void)
 {
-	nframes = 0x1000000 / PAGE_SIZE;
-	frames = (uint32_t*)kmalloc(INDEX_FROM_BIT(nframes));
+	nframes = MEM_SIZE / PAGE_SIZE;
+	frames = kmalloc(INDEX_FROM_BIT(nframes));
 	bzero(frames, INDEX_FROM_BIT(nframes));
 
-	kernel_dir = (page_dir_t*)kmalloc_a(sizeof(page_dir_t));
+	kernel_dir = kmalloc_a(sizeof(page_dir_t));
 	bzero(kernel_dir, sizeof(page_dir_t));
 	current_dir = kernel_dir;
 
@@ -102,6 +102,7 @@ void paging_init(void)
 	for (uint32_t i = KHEAP_START; i < KHEAP_START + KHEAP_INITIAL_SIZE; i += PAGE_SIZE)
 		alloc_frame(get_page(i, 1, kernel_dir), 0, 0);
 
-	paging_flush((uint32_t)kernel_dir->tables_phys);
+	paging_flush((uintptr_t)kernel_dir->tables_phys);
+
 	kheap = create_heap(KHEAP_START, KHEAP_START + KHEAP_INITIAL_SIZE, 0xcffff000, 0, 0);
 }
