@@ -7,10 +7,10 @@ uintptr_t placement_addr = (uintptr_t)&end;
 extern page_dir_t *kernel_dir;
 heap_t *kheap;
 
-void *kmalloc_int(size_t sz, int align, uintptr_t *phys)
+static void *kmalloc_int(size_t sz, uint8_t align, uintptr_t *phys)
 {
 	if (kheap) {
-		void *addr = alloc(sz, (uint8_t)align, kheap);
+		void *addr = alloc(sz, align, kheap);
 		if (phys) {
 			page_t *page = get_page((uint32_t)addr, 0, kernel_dir);
 			*phys = page->frame * PAGE_SIZE + ((uint32_t)addr & 0xfff);
