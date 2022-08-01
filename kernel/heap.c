@@ -1,22 +1,23 @@
 #include "heap.h"
 #include "kheap.h"
 #include "paging.h"
+#include "panic.h"
 
 extern page_dir_t *kernel_dir;
 
-static int32_t find_smallest_hole(uint32_t size, uint8_t page_align, heap_t *heap)
+static int find_smallest_hole(size_t size, uint8_t page_align, heap_t *heap)
 {
-	uint32_t i;
+	size_t i;
 
 	for (i = 0; i < heap->index.size; ++i) {
 		header_t *header = lookup_vec(i, &heap->index);
 		if (page_align > 0) {
-			uint32_t location = (uint32_t)header;
-			int32_t offset = 0;
+			uintptr_t location = (uintptr_t)header;
+			int offset = 0;
 			if (!IS_ALIGNED(location + sizeof(header_t)))
 				offset = PAGE_SIZE - (location + sizeof(header_t)) % PAGE_SIZE;
-			int32_t hole_size = (int32_t)header->size - offset;
-			if (hole_size >= (int32_t)size)
+			int hole_size = (int)header->size - offset;
+			if (hole_size >= (int)size)
 				break;
 		} else if (header->size >= size) {
 			break;
@@ -31,13 +32,13 @@ static int header_t_less_than(void *a, void *b)
 	return ((header_t*)a)->size < ((header_t*)b)->size;
 }
 
-heap_t *create_heap(uint32_t start, uint32_t end,
-		uint32_t max, uint8_t supervisor, uint8_t readonly)
+heap_t *create_heap(uintptr_t start, uintptr_t end,
+		uintptr_t max, uint8_t supervisor, uint8_t readonly)
 {
 	if (!IS_ALIGNED(start) || !IS_ALIGNED(end))
 		return NULL;
 
-	heap_t *heap = (heap_t*)kmalloc(sizeof(heap_t));
+	heap_t *heap = kmalloc(sizeof(heap_t));
 
 	heap->index = place_vec((void*)start, HEAP_INDEX_SIZE, &header_t_less_than);
 
@@ -60,7 +61,7 @@ heap_t *create_heap(uint32_t start, uint32_t end,
 	return heap;
 }
 
-static void expand(uint32_t new_size, heap_t *heap)
+static void expand(size_t new_size, heap_t *heap)
 {
 	if (new_size <= heap->end_addr - heap->start_addr)
 		panic("unable to expand the heap");
@@ -71,14 +72,17 @@ static void expand(uint32_t new_size, heap_t *heap)
 	if (new_size + heap->start_addr > heap->max_addr)
 		panic("unable to expand the heap");
 
-	for (uint32_t i = heap->end_addr - heap->start_addr; i < new_size; i += PAGE_SIZE)
+	uintptr_t i = heap->end_addr - heap->start_addr;
+	while (i < new_size) {
 		alloc_frame(get_page(heap->start_addr+i, 1, kernel_dir),
-				!!heap->supervisor, !heap->readonly);
+					!!heap->supervisor, !heap->readonly);
+		i += PAGE_SIZE;
+	}
 
 	heap->end_addr = heap->start_addr + new_size;
 }
 
-static uint32_t shrink(uint32_t new_size, heap_t *heap)
+static size_t shrink(size_t new_size, heap_t *heap)
 {
 	if (new_size > heap->end_addr - heap->start_addr)
 		panic("unable to shrink the heap");
@@ -88,29 +92,35 @@ static uint32_t shrink(uint32_t new_size, heap_t *heap)
 	if (new_size < HEAP_MIN_SIZE)
 		new_size = HEAP_MIN_SIZE;
 
-	for (uint32_t i = heap->end_addr - heap->start_addr; new_size < i; i -= PAGE_SIZE)
+	uintptr_t i = heap->end_addr - heap->start_addr;
+	while (new_size < i) {
 		free_frame(get_page(heap->start_addr+i, 0, kernel_dir));
+		i -= PAGE_SIZE;
+	}
 
 	heap->end_addr = heap->start_addr + new_size;
 
 	return new_size;
 }
 
-void *alloc(uint32_t size, uint8_t page_align, heap_t *heap)
+void *alloc(size_t size, uint8_t page_align, heap_t *heap)
 {
-	uint32_t new_size = size + sizeof(header_t) + sizeof(footer_t);
-	int32_t i = find_smallest_hole(new_size, page_align, heap);
+	size_t new_size = size + sizeof(header_t) + sizeof(footer_t);
 
+	// try to find empty space
+	int i = find_smallest_hole(new_size, page_align, heap);
+
+	// if not found
 	if (i == -1) {
-		uint32_t old_length = heap->end_addr - heap->start_addr;
-		uint32_t old_end_addr = heap->end_addr;
+		uintptr_t old_length = heap->end_addr - heap->start_addr;
+		uintptr_t old_end_addr = heap->end_addr;
 
 		expand(old_length + new_size, heap);
-		uint32_t new_length = heap->end_addr - heap->start_addr;
+		uintptr_t new_length = heap->end_addr - heap->start_addr;
 
 		uint32_t idx = (uint32_t)-1, value = 0;
 		for (i = 0; (uint32_t)i < heap->index.size; ++i) {
-			uint32_t tmp = (uint32_t)lookup_vec(i, &heap->index);
+			uintptr_t tmp = (uintptr_t)lookup_vec(i, &heap->index);
 			if (tmp > value) {
 				value = tmp;
 				idx = i;
@@ -194,7 +204,7 @@ void free(void *p, heap_t *heap)
 
 	header->is_hole = 1;
 
-	char do_add = 1;
+	int valid = 1;
 
 	footer_t *test_footer = (footer_t*)((uint32_t)header - sizeof(footer_t));
 	if (test_footer->magic == HEAP_MAGIC && test_footer->header->is_hole == 1) {
@@ -202,7 +212,7 @@ void free(void *p, heap_t *heap)
 		header = test_footer->header;
 		footer->header = header;
 		header->size += cache_size;
-		do_add = 0;
+		valid = 0;
 	}
 
 	header_t *test_header = (header_t*)((uint32_t)footer + sizeof(footer_t));
@@ -235,6 +245,6 @@ void free(void *p, heap_t *heap)
 		}
 	}
 
-	if (do_add == 1)
-		insert_vec((void*)header, &heap->index);
+	if (valid == 1)
+		insert_vec(header, &heap->index);
 }
