@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+typedef int (*cmp_t)(void*, void*);
+
 typedef struct
 {
     void **array;
@@ -11,10 +13,6 @@ typedef struct
     size_t max_size;
     cmp_t cmp;
 } vec_t;
-
-typedef int (*cmp_t)(void*, void*);
-
-int cmp(void *a, void *b);
 
 vec_t create_vec(size_t max_size, cmp_t cmp);
 vec_t place_vec(void *addr, size_t max_size, cmp_t cmp);

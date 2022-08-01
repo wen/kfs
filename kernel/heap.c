@@ -9,7 +9,7 @@ static int32_t find_smallest_hole(uint32_t size, uint8_t page_align, heap_t *hea
 	uint32_t i;
 
 	for (i = 0; i < heap->index.size; ++i) {
-		header_t *header = (header_t*)lookup_ordered_array(i, &heap->index);
+		header_t *header = lookup_vec(i, &heap->index);
 		if (page_align > 0) {
 			uint32_t location = (uint32_t)header;
 			int32_t offset = 0;
@@ -26,9 +26,9 @@ static int32_t find_smallest_hole(uint32_t size, uint8_t page_align, heap_t *hea
 	return i == heap->index.size ? -1 : (int32_t)i;
 }
 
-static int8_t header_t_less_than(void *a, void *b)
+static int header_t_less_than(void *a, void *b)
 {
-	return ((header_t*)a)->size < ((header_t*)b)->size; // ? 1 : 0;
+	return ((header_t*)a)->size < ((header_t*)b)->size;
 }
 
 heap_t *create_heap(uint32_t start, uint32_t end,
@@ -39,9 +39,9 @@ heap_t *create_heap(uint32_t start, uint32_t end,
 
 	heap_t *heap = (heap_t*)kmalloc(sizeof(heap_t));
 
-	heap->index = place_ordered_array((void*)start, HEAP_INDEX_SIZE, &header_t_less_than);
+	heap->index = place_vec((void*)start, HEAP_INDEX_SIZE, &header_t_less_than);
 
-	start += sizeof(type_t) * HEAP_INDEX_SIZE;
+	start += sizeof(void*) * HEAP_INDEX_SIZE;
 	if (!IS_ALIGNED(start))
 		start = ALIGN(start);
 
@@ -55,7 +55,7 @@ heap_t *create_heap(uint32_t start, uint32_t end,
 	hole->size = end - start;
 	hole->magic = HEAP_MAGIC;
 	hole->is_hole = 1;
-	insert_ordered_array((void*)hole, &heap->index);
+	insert_vec(hole, &heap->index);
 
 	return heap;
 }
@@ -101,7 +101,7 @@ void *alloc(uint32_t size, uint8_t page_align, heap_t *heap)
 
 		uint32_t idx = (uint32_t)-1, value = 0;
 		for (i = 0; (uint32_t)i < heap->index.size; ++i) {
-			uint32_t tmp = (uint32_t)lookup_ordered_array(i, &heap->index);
+			uint32_t tmp = (uint32_t)lookup_vec(i, &heap->index);
 			if (tmp > value) {
 				value = tmp;
 				idx = i;
@@ -116,9 +116,9 @@ void *alloc(uint32_t size, uint8_t page_align, heap_t *heap)
 			footer_t *footer = (footer_t*)(old_end_addr + header->size - sizeof(footer_t));
 			footer->magic = HEAP_MAGIC;
 			footer->header = header;
-			insert_ordered_array((void*)header, &heap->index);
+			insert_vec((void*)header, &heap->index);
 		} else {
-			header_t *header = lookup_ordered_array(idx, &heap->index);
+			header_t *header = lookup_vec(idx, &heap->index);
 			header->size += new_length - old_length;
 			footer_t *footer = (footer_t*)((uint32_t)header + header->size - sizeof(footer_t));
 			footer->header = header;
@@ -128,7 +128,7 @@ void *alloc(uint32_t size, uint8_t page_align, heap_t *heap)
 		return alloc(size, page_align, heap);
 	}
 
-	header_t *orig_hole_header = (header_t*)lookup_ordered_array(i, &heap->index);
+	header_t *orig_hole_header = (header_t*)lookup_vec(i, &heap->index);
 	uint32_t orig_hole_pos = (uint32_t)orig_hole_header;
 	uint32_t orig_hole_size = orig_hole_header->size;
 	if (orig_hole_size-new_size < sizeof(header_t) + sizeof(footer_t)) {
@@ -147,7 +147,7 @@ void *alloc(uint32_t size, uint8_t page_align, heap_t *heap)
 		orig_hole_pos = new_location;
 		orig_hole_size = orig_hole_size - hole_header->size;
 	} else {
-		remove_ordered_array(i, &heap->index);
+		remove_vec(i, &heap->index);
 	}
 
 	header_t *block_header = (header_t*)orig_hole_pos;
@@ -169,7 +169,7 @@ void *alloc(uint32_t size, uint8_t page_align, heap_t *heap)
 			hole_footer->magic = HEAP_MAGIC;
 			hole_footer->header = hole_header;
 		}
-		insert_ordered_array((void*)hole_header, &heap->index);
+		insert_vec((void*)hole_header, &heap->index);
 	}
 
 	return (void*)((uint32_t)block_header+sizeof(header_t));
@@ -203,9 +203,9 @@ void free(void *p, heap_t *heap)
 		footer = test_footer;
 		uint32_t it = 0;
 		while ((it < heap->index.size) &&
-				(lookup_ordered_array(it, &heap->index) != (void*)test_header))
+				(lookup_vec(it, &heap->index) != (void*)test_header))
 			it++;
-		remove_ordered_array(it, &heap->index);
+		remove_vec(it, &heap->index);
 	}
 
 	if ((uint32_t)footer+sizeof(footer_t) == heap->end_addr) {
@@ -219,13 +219,13 @@ void free(void *p, heap_t *heap)
 		} else {
 			uint32_t it = 0;
 			while ((it < heap->index.size) &&
-					(lookup_ordered_array(it, &heap->index) != (void*)test_header))
+					(lookup_vec(it, &heap->index) != (void*)test_header))
 				it++;
 			if (it < heap->index.size)
-				remove_ordered_array(it, &heap->index);
+				remove_vec(it, &heap->index);
 		}
 	}
 
 	if (do_add == 1)
-		insert_ordered_array((void*)header, &heap->index);
+		insert_vec((void*)header, &heap->index);
 }

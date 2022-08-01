@@ -2,11 +2,6 @@
 #include "string.h"
 #include "kheap.h"
 
-int cmp(void *a, void *b)
-{
-	return *a < *b;
-}
-
 vec_t create_vec(size_t max_size, cmp_t cmp)
 {
 	vec_t ret;
@@ -47,12 +42,12 @@ void insert_vec(void *item, vec_t *vec)
 		{} // no operation
 
 	if (i == vec->size) {
-		vec->array[array->size++] = item;
+		vec->array[vec->size++] = item;
 	} else {
 		void *tmp = vec->array[i];
 		vec->array[i] = item;
-		while (i < array->size) {
-			++i
+		while (i < vec->size) {
+			++i;
 			void *tmp2 = vec->array[i];
 			vec->array[i] = tmp;
 			tmp = tmp2;

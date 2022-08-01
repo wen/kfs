@@ -2,7 +2,7 @@
 #define HEAP_H
 
 #include <stdint.h>
-#include "ordered_array.h"
+#include "vec.h"
 
 #define HEAP_INDEX_SIZE	0x20000
 #define HEAP_MAGIC		0x0000002A
@@ -22,7 +22,7 @@ typedef struct footer_s {
 } footer_t;
 
 typedef struct heap_s {
-	ordered_array_t index;
+	vec_t index;
 	uint32_t start_addr;
 	uint32_t end_addr;
 	uint32_t max_addr;
