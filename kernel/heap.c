@@ -35,7 +35,7 @@ heap_t *create_heap(uint32_t start, uint32_t end,
 		uint32_t max, uint8_t supervisor, uint8_t readonly)
 {
 	if (!IS_ALIGNED(start) || !IS_ALIGNED(end))
-		return (void*)0;
+		return NULL;
 
 	heap_t *heap = (heap_t*)kmalloc(sizeof(heap_t));
 
@@ -62,8 +62,14 @@ heap_t *create_heap(uint32_t start, uint32_t end,
 
 static void expand(uint32_t new_size, heap_t *heap)
 {
+	if (new_size <= heap->end_addr - heap->start_addr)
+		panic("unable to expand the heap");
+
 	if (!IS_ALIGNED(new_size))
 		new_size = ALIGN(new_size);
+
+	if (new_size + heap->start_addr > heap->max_addr)
+		panic("unable to expand the heap");
 
 	for (uint32_t i = heap->end_addr - heap->start_addr; i < new_size; i += PAGE_SIZE)
 		alloc_frame(get_page(heap->start_addr+i, 1, kernel_dir),
@@ -74,6 +80,9 @@ static void expand(uint32_t new_size, heap_t *heap)
 
 static uint32_t shrink(uint32_t new_size, heap_t *heap)
 {
+	if (new_size > heap->end_addr - heap->start_addr)
+		panic("unable to shrink the heap");
+
 	if (!IS_ALIGNED(new_size))
 		new_size = ALIGN(new_size);
 	if (new_size < HEAP_MIN_SIZE)
