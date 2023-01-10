@@ -40,7 +40,7 @@ static uint32_t first_frame(void)
 			}
 		}
 	}
-	return 0;
+	return (uint32_t)-1;
 }
 
 void alloc_frame(page_t *page, int is_kernel, int is_writable)
@@ -52,7 +52,7 @@ void alloc_frame(page_t *page, int is_kernel, int is_writable)
 		panic("no free frames");
 	set_frame(idx * PAGE_SIZE);
 	page->present = 1;
-	page->rw = !!is_writable;
+	page->writable = !!is_writable;
 	page->user = !is_kernel;
 	page->frame = idx;
 }
