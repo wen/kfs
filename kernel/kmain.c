@@ -5,13 +5,13 @@
 
 void kmain(void)
 {
-	kinit();
-
 	gdt_init();
 
-	paging_init();
+	kinit();
 
 	banner();
 
-	shell();
+	paging_init();
+
+	//shell();
 }

@@ -1,12 +1,12 @@
 #include "paging.h"
 #include "kheap.h"
-#include "heap.h"
+//#include "heap.h"
 #include "string.h"
 #include "panic.h"
 #include "tty.h"
 
 extern uintptr_t placement_addr;
-extern heap_t *kheap;
+//extern heap_t *kheap;
 extern void paging_flush(uintptr_t);
 
 uint32_t *frames;
@@ -71,11 +71,13 @@ page_t *get_page(uint32_t addr, int make, page_dir_t *dir)
 {
 	addr /= PAGE_SIZE;
 	uint32_t index = addr / 1024;
+
 	if (dir->tables[index])
 		return &dir->tables[index]->pages[addr%1024];
 	if (make) {
 		uint32_t tmp;
-		dir->tables[index] = (page_tab_t*)kmalloc_ap(sizeof(page_tab_t), &tmp);
+		dir->tables[index] = kmalloc_ap(sizeof(page_tab_t), &tmp);
+		bzero(dir->tables[index], PAGE_SIZE);
 		dir->tables_phys[index] = tmp | 0x7;
 		return &dir->tables[index]->pages[addr%1024];
 	}
@@ -93,16 +95,20 @@ void paging_init(void)
 	bzero(kernel_dir, sizeof(page_dir_t));
 	current_dir = kernel_dir;
 
+	/*
 	for (uint32_t i = KHEAP_START; i < KHEAP_START + KHEAP_INITIAL_SIZE; i += PAGE_SIZE)
 		get_page(i, 1, kernel_dir);
+	*/
 
 	for (uint32_t i = 0; i < placement_addr + PAGE_SIZE; i += PAGE_SIZE)
 		alloc_frame(get_page(i, 1, kernel_dir), 0, 0);
 
+	/*
 	for (uint32_t i = KHEAP_START; i < KHEAP_START + KHEAP_INITIAL_SIZE; i += PAGE_SIZE)
 		alloc_frame(get_page(i, 1, kernel_dir), 0, 0);
+	*/
 
 	paging_flush((uintptr_t)kernel_dir->tables_phys);
 
-	kheap = create_heap(KHEAP_START, KHEAP_START + KHEAP_INITIAL_SIZE, 0xcffff000, 0, 0);
+	//kheap = create_heap(KHEAP_START, KHEAP_START + KHEAP_INITIAL_SIZE, 0xcffff000, 0, 0);
 }
