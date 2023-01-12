@@ -4,6 +4,7 @@
 #include "string.h"
 #include "panic.h"
 #include "tty.h"
+#include "isr.h"
 
 extern uintptr_t placement_addr;
 //extern heap_t *kheap;
@@ -85,6 +86,30 @@ page_t *get_page(uint32_t addr, int make, page_dir_t *dir)
 	return (void*)0;
 }
 
+void page_fault(registers_t regs)
+{
+	uintptr_t faulting_addr;
+	asm volatile("mov %%cr2, %0" : "=r" (faulting_addr));
+
+	int preset = !(regs.err_code & 0x1);
+	int writable = regs.err_code & 0x2;
+	int user = regs.err_code & 0x4;
+	int reserved = regs.err_code & 0x8;
+
+	printk("Page fault! ( ");
+	if (preset)
+		printk("present ");
+	if (writable)
+		printk("read-only ");
+	if (user)
+		printk("user-mode ");
+	if (reserved)
+		printk("reserved ");
+	printk(") at 0x%08x\n", faulting_addr);
+
+	for(;;);
+}
+
 void paging_init(void)
 {
 	nframes = MEM_SIZE / PAGE_SIZE;
@@ -107,6 +132,8 @@ void paging_init(void)
 	for (uint32_t i = KHEAP_START; i < KHEAP_START + KHEAP_INITIAL_SIZE; i += PAGE_SIZE)
 		alloc_frame(get_page(i, 1, kernel_dir), 0, 0);
 	*/
+
+	register_interrupt_handler(14, page_fault);
 
 	paging_flush((uintptr_t)kernel_dir->tables_phys);
 
