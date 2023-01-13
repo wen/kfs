@@ -1,15 +1,14 @@
 #include "kheap.h"
 #include "paging.h"
-//#include "heap.h"
+#include "heap.h"
 
 extern uintptr_t end;
 uintptr_t placement_addr = (uintptr_t)&end;
 extern page_dir_t *kernel_dir;
-//heap_t *kheap;
+heap_t *kheap;
 
 static void *kmalloc_int(size_t sz, uint8_t align, uintptr_t *phys)
 {
-	/*
 	if (kheap) {
 		void *addr = alloc(sz, align, kheap);
 		if (phys) {
@@ -18,7 +17,6 @@ static void *kmalloc_int(size_t sz, uint8_t align, uintptr_t *phys)
 		}
 		return addr;
 	}
-	*/
 
 	if (align == 1 && !IS_ALIGNED(placement_addr))
 		placement_addr = ALIGN(placement_addr);
@@ -30,12 +28,10 @@ static void *kmalloc_int(size_t sz, uint8_t align, uintptr_t *phys)
 	return tmp;
 }
 
-/*
 void kfree(void *p)
 {
 	free(p, kheap);
 }
-*/
 
 void *kmalloc_a(size_t sz)
 {

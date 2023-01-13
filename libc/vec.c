@@ -30,8 +30,7 @@ vec_t place_vec(void *addr, size_t max_size, cmp_t cmp)
 
 void destroy_vec(vec_t *vec)
 {
-	(void)vec;
-	//kfree(vec->array);
+	kfree(vec->array);
 }
 
 void insert_vec(void *item, vec_t *vec)
