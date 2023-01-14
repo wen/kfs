@@ -2,20 +2,7 @@
 #include "string.h"
 #include "kheap.h"
 
-vec_t create_vec(size_t max_size, cmp_t cmp)
-{
-	vec_t ret;
-
-	ret.array = kmalloc(max_size * sizeof(void*));
-	bzero(ret.array, max_size * sizeof(void*));
-	ret.size = 0;
-	ret.max_size = max_size;
-	ret.cmp = cmp;
-
-	return ret;
-}
-
-vec_t place_vec(void *addr, size_t max_size, cmp_t cmp)
+vec_t create_vec(void *addr, size_t max_size, cmp_t cmp)
 {
 	vec_t ret;
 

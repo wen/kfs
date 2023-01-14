@@ -13,8 +13,7 @@ typedef struct vec_s {
 	cmp_t cmp;
 } vec_t;
 
-vec_t create_vec(size_t max_size, cmp_t cmp);
-vec_t place_vec(void *addr, size_t max_size, cmp_t cmp);
+vec_t create_vec(void *addr, size_t max_size, cmp_t cmp);
 void destroy_vec(vec_t *vec);
 void insert_vec(void *item, vec_t *vec);
 void *lookup_vec(size_t i, vec_t *vec);
