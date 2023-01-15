@@ -70,7 +70,7 @@ static void expand(size_t new_size, heap_t *heap)
 		new_size = ALIGN(new_size);
 
 	if (new_size + heap->start_addr > heap->max_addr)
-		panic("unable to expand the heap");
+		panic("no more space");
 
 	uintptr_t i = heap->end_addr - heap->start_addr;
 	while (i < new_size) {

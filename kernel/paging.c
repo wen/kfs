@@ -41,7 +41,8 @@ static uint32_t first_frame(void)
 			}
 		}
 	}
-	return (uint32_t)-1;
+	panic("no free frames");
+	return -1;
 }
 
 void alloc_frame(page_t *page, int is_kernel, int is_writable)
@@ -49,8 +50,6 @@ void alloc_frame(page_t *page, int is_kernel, int is_writable)
 	if (page->frame)
 		return;
 	uint32_t idx = first_frame();
-	if (idx == (uint32_t)-1)
-		panic("no free frames");
 	set_frame(idx * PAGE_SIZE);
 	page->present = 1;
 	page->writable = !!is_writable;
@@ -133,5 +132,5 @@ void paging_init(void)
 
 	paging_flush((uintptr_t)kernel_dir->tables_phys);
 
-	kheap = create_heap(KHEAP_START, KHEAP_START + KHEAP_INITIAL_SIZE, 0xcffff000, 0, 0);
+	kheap = create_heap(KHEAP_START, KHEAP_START + KHEAP_INITIAL_SIZE, KHEAP_END, 0, 0);
 }
