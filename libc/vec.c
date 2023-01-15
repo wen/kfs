@@ -1,6 +1,7 @@
 #include "vec.h"
 #include "string.h"
 #include "kheap.h"
+#include "panic.h"
 
 vec_t create_vec(void *addr, size_t max_size, cmp_t cmp)
 {
@@ -45,6 +46,8 @@ void insert_vec(void *item, vec_t *vec)
 
 void *lookup_vec(size_t i, vec_t *vec)
 {
+	if (i >= vec->size)
+		panic("Heap error");
 	return vec->array[i];
 }
 
