@@ -36,7 +36,7 @@ heap_t *create_heap(uintptr_t start, uintptr_t end,
 		uintptr_t max, uint8_t supervisor, uint8_t readonly)
 {
 	if (!IS_ALIGNED(start) || !IS_ALIGNED(end))
-		return NULL;
+		panic("Heap error: address not aligned!");
 
 	heap_t *heap = kmalloc(sizeof(heap_t));
 
