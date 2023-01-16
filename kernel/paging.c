@@ -117,18 +117,18 @@ void paging_init(void)
 	kernel_dir = kmalloc_a(sizeof(page_dir_t));
 	bzero(kernel_dir, sizeof(page_dir_t));
 
-	for (uint32_t i = KHEAP_START; i < KHEAP_START + KHEAP_INITIAL_SIZE; i += PAGE_SIZE)
+	for (uint32_t i = KHEAP_START; i < KHEAP_START + KHEAP_INIT_SIZE; i += PAGE_SIZE)
 		get_page(i, 1, kernel_dir);
 
 	for (uint32_t i = 0; i < placement_addr + PAGE_SIZE; i += PAGE_SIZE)
 		alloc_frame(get_page(i, 1, kernel_dir), 0, 0);
 
-	for (uint32_t i = KHEAP_START; i < KHEAP_START + KHEAP_INITIAL_SIZE; i += PAGE_SIZE)
+	for (uint32_t i = KHEAP_START; i < KHEAP_START + KHEAP_INIT_SIZE; i += PAGE_SIZE)
 		alloc_frame(get_page(i, 1, kernel_dir), 0, 0);
 
 	register_interrupt_handler(14, page_fault);
 
 	paging_flush((uintptr_t)kernel_dir->tables_phys);
 
-	kheap = create_heap(KHEAP_START, KHEAP_START + KHEAP_INITIAL_SIZE, KHEAP_END, 0, 0);
+	kheap = create_heap(KHEAP_START, KHEAP_START + KHEAP_INIT_SIZE, KHEAP_END, 0, 0);
 }
