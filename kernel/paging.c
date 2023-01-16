@@ -13,7 +13,6 @@ extern void paging_flush(uintptr_t);
 uint32_t *frames;
 uint32_t nframes;
 page_dir_t *kernel_dir;
-page_dir_t *current_dir;
 
 static void set_frame(uint32_t frame_addr)
 {
@@ -117,7 +116,6 @@ void paging_init(void)
 
 	kernel_dir = kmalloc_a(sizeof(page_dir_t));
 	bzero(kernel_dir, sizeof(page_dir_t));
-	current_dir = kernel_dir;
 
 	for (uint32_t i = KHEAP_START; i < KHEAP_START + KHEAP_INITIAL_SIZE; i += PAGE_SIZE)
 		get_page(i, 1, kernel_dir);

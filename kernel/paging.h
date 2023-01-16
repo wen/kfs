@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #define PAGE_SIZE 			0x1000
-#define MEM_SIZE			0x1000000
+#define MEM_SIZE			0x0fffffff
 #define INDEX_FROM_BIT(x)	((x) / 32)
 #define OFFSET_FROM_BIT(x)	((x) % 32)
 
