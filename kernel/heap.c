@@ -103,7 +103,7 @@ static size_t shrink(size_t new_size, heap_t *heap)
 	return new_size;
 }
 
-void *alloc(size_t size, uint8_t page_align, heap_t *heap)
+void *heap_alloc(size_t size, uint8_t page_align, heap_t *heap)
 {
 	size_t new_size = size + sizeof(header_t) + sizeof(footer_t);
 
@@ -144,7 +144,7 @@ void *alloc(size_t size, uint8_t page_align, heap_t *heap)
 			footer->magic = HEAP_MAGIC;
 		}
 
-		return alloc(size, page_align, heap);
+		return heap_alloc(size, page_align, heap);
 	}
 
 	header_t *orig_hole_header = (header_t*)lookup_vec(i, &heap->index);
@@ -194,7 +194,7 @@ void *alloc(size_t size, uint8_t page_align, heap_t *heap)
 	return (void*)((uint32_t)block_header+sizeof(header_t));
 }
 
-void free(void *p, heap_t *heap)
+void heap_free(void *p, heap_t *heap)
 {
 	if (p == 0)
 		return;

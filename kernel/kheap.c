@@ -10,7 +10,7 @@ heap_t *kheap;
 static void *kmalloc_int(size_t sz, uint8_t align, uintptr_t *phys)
 {
 	if (kheap) {
-		void *addr = alloc(sz, align, kheap);
+		void *addr = heap_alloc(sz, align, kheap);
 		if (phys) {
 			page_t *page = get_page((uint32_t)addr, 0, kernel_dir);
 			*phys = page->frame * PAGE_SIZE + ((uint32_t)addr & 0xfff);
@@ -30,7 +30,7 @@ static void *kmalloc_int(size_t sz, uint8_t align, uintptr_t *phys)
 
 void kfree(void *p)
 {
-	free(p, kheap);
+	heap_free(p, kheap);
 }
 
 void *kmalloc_a(size_t sz)
