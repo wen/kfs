@@ -52,3 +52,13 @@ void *kmalloc(size_t sz)
 {
 	return kmalloc_int(sz, 0, 0);
 }
+
+void *kbrk(size_t sz)
+{
+	if (sz == 0)
+		return NULL;
+
+	void *ret = (void*)placement_addr;
+	placement_addr += sz;
+	return ret;
+}
