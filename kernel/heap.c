@@ -231,6 +231,9 @@ void heap_free(void *p, heap_t *heap)
 		while ((it < heap->index.size) &&
 				(lookup_vec(it, &heap->index) != (void*)test_header))
 			it++;
+
+		if (it >= heap->index.size)
+			panic("heap error");
 		remove_vec(it, &heap->index);
 	}
 
