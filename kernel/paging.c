@@ -132,3 +132,20 @@ void paging_init(void)
 
 	kheap = create_heap(KHEAP_START, KHEAP_START + KHEAP_INIT_SIZE, KHEAP_END, 0, 0);
 }
+
+uintptr_t get_physical_addr(uintptr_t addr)
+{
+	uint32_t offset = addr % PAGE_SIZE;
+
+	page_t *page = get_page(addr, 0, kernel_dir);
+
+	if (!page)
+		return 0;
+
+	return page->frame * PAGE_SIZE + offset;
+}
+
+uintptr_t get_virtual_addr(uintptr_t addr)
+{
+	return addr;
+}
