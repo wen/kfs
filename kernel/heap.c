@@ -36,7 +36,7 @@ heap_t *create_heap(uintptr_t start, uintptr_t end,
 		uintptr_t max, uint8_t supervisor, uint8_t readonly)
 {
 	if (!IS_ALIGNED(start) || !IS_ALIGNED(end))
-		panic("Heap error: address not aligned!");
+		panic("heap error: address not aligned!");
 
 	heap_t *heap = kmalloc(sizeof(heap_t));
 
@@ -203,6 +203,9 @@ void heap_free(void *p, heap_t *heap)
 
 	header_t *header = (header_t*)((uint32_t)p - sizeof(header_t));
 	footer_t *footer = (footer_t*)((uint32_t)header + header->size - sizeof(footer_t));
+
+	if (header->magic != HEAP_MAGIC || footer->magic != HEAP_MAGIC)
+		panic("heap error: memory corrupted");
 
 	header->is_hole = 1;
 
