@@ -110,7 +110,7 @@ void *heap_alloc(size_t size, uint8_t page_align, heap_t *heap)
 	// try to find empty space
 	int i = find_smallest_hole(new_size, page_align, heap);
 
-	// if not found
+	// if not found then expand
 	if (i == -1) {
 		uintptr_t old_length = heap->end_addr - heap->start_addr;
 		uintptr_t old_end_addr = heap->end_addr;
@@ -169,6 +169,7 @@ void *heap_alloc(size_t size, uint8_t page_align, heap_t *heap)
 		remove_vec(i, &heap->index);
 	}
 
+	// change header and footer
 	header_t *block_header = (header_t*)orig_hole_pos;
 	block_header->magic = HEAP_MAGIC;
 	block_header->is_hole = 0;
@@ -178,6 +179,7 @@ void *heap_alloc(size_t size, uint8_t page_align, heap_t *heap)
 	block_footer->magic = HEAP_MAGIC;
 	block_footer->header = block_header;
 
+	// create a new hole after the allocation
 	if (orig_hole_size - new_size > 0) {
 		header_t *hole_header = (header_t*)(orig_hole_pos + sizeof(header_t) + size + sizeof(footer_t));
 		hole_header->magic = HEAP_MAGIC;
@@ -206,6 +208,7 @@ void heap_free(void *p, heap_t *heap)
 
 	int valid = 1;
 
+	// try to merge left
 	footer_t *test_footer = (footer_t*)((uint32_t)header - sizeof(footer_t));
 	if (test_footer->magic == HEAP_MAGIC && test_footer->header->is_hole == 1) {
 		uint32_t cache_size = header->size;
@@ -215,6 +218,7 @@ void heap_free(void *p, heap_t *heap)
 		valid = 0;
 	}
 
+	// try to merge right
 	header_t *test_header = (header_t*)((uint32_t)footer + sizeof(footer_t));
 	if (test_header->magic == HEAP_MAGIC && test_header->is_hole) {
 		header->size += test_header->size;
@@ -227,6 +231,7 @@ void heap_free(void *p, heap_t *heap)
 		remove_vec(it, &heap->index);
 	}
 
+	// we can contract if we hit end
 	if ((uint32_t)footer+sizeof(footer_t) == heap->end_addr) {
 		uint32_t old_length = heap->end_addr - heap->start_addr;
 		uint32_t new_length = shrink((uint32_t)header - heap->start_addr, heap);
