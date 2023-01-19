@@ -16,5 +16,6 @@ void isr_handler(registers_t *regs)
 		handler(*regs);
 	} else {
 		printk("unhandled interrupt: %d\n", regs->int_no);
+		for (;;);
 	}
 }
