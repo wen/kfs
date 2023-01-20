@@ -81,7 +81,7 @@ page_t *get_page(uint32_t addr, int make, page_dir_t *dir)
 		return &dir->tables[index]->pages[addr%1024];
 	}
 
-	return (void*)0;
+	return NULL;
 }
 
 void page_fault(registers_t regs)
@@ -147,5 +147,19 @@ uintptr_t get_physical_addr(uintptr_t addr)
 
 uintptr_t get_virtual_addr(uintptr_t addr)
 {
-	return addr;
+	uint32_t offset = addr % PAGE_SIZE;
+	addr /= PAGE_SIZE;
+	uint32_t dir_i, page_i;
+
+	for (dir_i = 0; dir_i != 1024; ++dir_i) {
+		if (kernel_dir->tables[dir_i]) {
+			page_tab_t *page_tab = kernel_dir->tables[dir_i];
+			for (page_i = 0; page_i != 1024; ++page_i) {
+				if (page_tab->pages[page_i].frame == addr) {
+					return (dir_i*1024 + page_i)*PAGE_SIZE+offset;
+				}
+			}
+		}
+	}
+	return 0;
 }
