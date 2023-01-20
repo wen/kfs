@@ -9,6 +9,9 @@ heap_t *kheap;
 
 static void *malloc_int(size_t sz, uint8_t align, uintptr_t *phys)
 {
+	if (!sz)
+		return NULL;
+
 	if (kheap) {
 		void *addr = heap_alloc(sz, align, kheap);
 		if (phys) {
@@ -30,7 +33,15 @@ static void *malloc_int(size_t sz, uint8_t align, uintptr_t *phys)
 
 void free(void *p)
 {
+	if (!p)
+		return;
+
 	heap_free(p, kheap);
+}
+
+void kfree(void *p)
+{
+	free((void*)get_virtual_addr((uintptr_t)p));
 }
 
 void *malloc_a(size_t sz)
@@ -51,6 +62,11 @@ void *malloc_ap(size_t sz, uintptr_t *phys)
 void *malloc(size_t sz)
 {
 	return malloc_int(sz, 0, 0);
+}
+
+void *kmalloc(size_t sz)
+{
+	return (void*)get_physical_addr((uintptr_t)malloc(sz));
 }
 
 void *kbrk(size_t sz)

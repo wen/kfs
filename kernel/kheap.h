@@ -14,7 +14,9 @@ void *malloc_a(size_t sz);
 void *malloc_p(size_t sz, uintptr_t *phys);
 void *malloc_ap(size_t sz, uintptr_t *phys);
 void *malloc(size_t sz);
+void *kmalloc(size_t sz);
 void free(void *p);
+void kfree(void *p);
 void *kbrk(size_t sz);
 
 #endif

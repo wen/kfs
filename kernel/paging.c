@@ -135,6 +135,9 @@ void paging_init(void)
 
 uintptr_t get_physical_addr(uintptr_t addr)
 {
+	if (!addr)
+		return 0;
+
 	uint32_t offset = addr % PAGE_SIZE;
 
 	page_t *page = get_page(addr, 0, kernel_dir);
@@ -147,6 +150,9 @@ uintptr_t get_physical_addr(uintptr_t addr)
 
 uintptr_t get_virtual_addr(uintptr_t addr)
 {
+	if (!addr)
+		return 0;
+
 	uint32_t offset = addr % PAGE_SIZE;
 	addr /= PAGE_SIZE;
 	uint32_t dir_i, page_i;

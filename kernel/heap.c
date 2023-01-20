@@ -262,10 +262,18 @@ void heap_free(void *p, heap_t *heap)
 
 size_t get_size(void *ptr)
 {
+	if (!ptr)
+		return 0;
+
 	header_t *header = (header_t*)((uintptr_t)ptr - sizeof(header_t));
 
 	if (header->magic != HEAP_MAGIC)
 		panic("heap error: memory corrupted");
 
 	return header->size - sizeof(header_t) - sizeof(footer_t);
+}
+
+size_t kget_size(void *ptr)
+{
+	return get_size((void*)get_virtual_addr((uintptr_t)ptr));
 }
