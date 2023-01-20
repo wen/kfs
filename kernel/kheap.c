@@ -7,7 +7,7 @@ uintptr_t placement_addr = (uintptr_t)&end;
 extern page_dir_t *kernel_dir;
 heap_t *kheap;
 
-static void *kmalloc_int(size_t sz, uint8_t align, uintptr_t *phys)
+static void *malloc_int(size_t sz, uint8_t align, uintptr_t *phys)
 {
 	if (kheap) {
 		void *addr = heap_alloc(sz, align, kheap);
@@ -28,29 +28,29 @@ static void *kmalloc_int(size_t sz, uint8_t align, uintptr_t *phys)
 	return tmp;
 }
 
-void kfree(void *p)
+void free(void *p)
 {
 	heap_free(p, kheap);
 }
 
-void *kmalloc_a(size_t sz)
+void *malloc_a(size_t sz)
 {
-	return kmalloc_int(sz, 1, 0);
+	return malloc_int(sz, 1, 0);
 }
 
-void *kmalloc_p(size_t sz, uintptr_t *phys)
+void *malloc_p(size_t sz, uintptr_t *phys)
 {
-	return kmalloc_int(sz, 0, phys);
+	return malloc_int(sz, 0, phys);
 }
 
-void *kmalloc_ap(size_t sz, uintptr_t *phys)
+void *malloc_ap(size_t sz, uintptr_t *phys)
 {
-	return kmalloc_int(sz, 1, phys);
+	return malloc_int(sz, 1, phys);
 }
 
-void *kmalloc(size_t sz)
+void *malloc(size_t sz)
 {
-	return kmalloc_int(sz, 0, 0);
+	return malloc_int(sz, 0, 0);
 }
 
 void *kbrk(size_t sz)

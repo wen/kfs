@@ -10,11 +10,11 @@
 #define KHEAP_END 			0xc01ff000
 #define KHEAP_INIT_SIZE		0x00100000
 
-void *kmalloc_a(size_t sz);
-void *kmalloc_p(size_t sz, uintptr_t *phys);
-void *kmalloc_ap(size_t sz, uintptr_t *phys);
-void *kmalloc(size_t sz);
-void kfree(void *p);
+void *malloc_a(size_t sz);
+void *malloc_p(size_t sz, uintptr_t *phys);
+void *malloc_ap(size_t sz, uintptr_t *phys);
+void *malloc(size_t sz);
+void free(void *p);
 void *kbrk(size_t sz);
 
 #endif

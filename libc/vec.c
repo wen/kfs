@@ -18,7 +18,7 @@ vec_t create_vec(void *addr, size_t max_size, cmp_t cmp)
 
 void destroy_vec(vec_t *vec)
 {
-	kfree(vec->array);
+	free(vec->array);
 }
 
 void insert_vec(void *item, vec_t *vec)

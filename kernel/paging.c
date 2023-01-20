@@ -75,7 +75,7 @@ page_t *get_page(uint32_t addr, int make, page_dir_t *dir)
 		return &dir->tables[index]->pages[addr%1024];
 	if (make) {
 		uint32_t tmp;
-		dir->tables[index] = kmalloc_ap(sizeof(page_tab_t), &tmp);
+		dir->tables[index] = malloc_ap(sizeof(page_tab_t), &tmp);
 		bzero(dir->tables[index], PAGE_SIZE);
 		dir->tables_phys[index] = tmp | 0x7;
 		return &dir->tables[index]->pages[addr%1024];
@@ -111,10 +111,10 @@ void page_fault(registers_t regs)
 void paging_init(void)
 {
 	nframes = MEM_SIZE / PAGE_SIZE;
-	frames = kmalloc(INDEX_FROM_BIT(nframes));
+	frames = malloc(INDEX_FROM_BIT(nframes));
 	bzero(frames, INDEX_FROM_BIT(nframes));
 
-	kernel_dir = kmalloc_a(sizeof(page_dir_t));
+	kernel_dir = malloc_a(sizeof(page_dir_t));
 	bzero(kernel_dir, sizeof(page_dir_t));
 
 	for (uint32_t i = KHEAP_START; i < KHEAP_START + KHEAP_INIT_SIZE; i += PAGE_SIZE)

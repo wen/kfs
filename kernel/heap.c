@@ -38,7 +38,7 @@ heap_t *create_heap(uintptr_t start, uintptr_t end,
 	if (!IS_ALIGNED(start) || !IS_ALIGNED(end))
 		panic("heap error: address not aligned!");
 
-	heap_t *heap = kmalloc(sizeof(heap_t));
+	heap_t *heap = malloc(sizeof(heap_t));
 
 	heap->index = create_vec((void*)start, HEAP_INDEX_SIZE, &header_t_less_than);
 
