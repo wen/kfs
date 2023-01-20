@@ -259,3 +259,13 @@ void heap_free(void *p, heap_t *heap)
 	if (valid == 1)
 		insert_vec(header, &heap->index);
 }
+
+size_t get_size(void *ptr)
+{
+	header_t *header = (header_t*)((uintptr_t)ptr - sizeof(header_t));
+
+	if (header->magic != HEAP_MAGIC)
+		panic("heap error: memory corrupted");
+
+	return header->size - sizeof(header_t) - sizeof(footer_t);
+}
