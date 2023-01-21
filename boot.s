@@ -13,7 +13,7 @@
 .section .bss
 .align 16
 stack_bottom:
-.skip 16384 # stack size: 16 KiB
+.skip 0x400000
 stack_top:
 
 .section .text
