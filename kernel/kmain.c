@@ -4,8 +4,34 @@
 #include "paging.h"
 #include "kheap.h"
 #include "heap.h"
-#include "shell.h"
 #include "string.h"
+
+void test(void)
+{
+	void **ptr = malloc(0x400 * sizeof(void*));
+
+	for (int i = 0; i != 0x400; ++i) {
+		ptr[i] = malloc(8);
+		memcpy(ptr[i], "AAAAAAAA", 8);
+	}
+
+	printk("0x%08x - size: %u\n", ptr[0xf0], get_size(ptr[0xf0]));
+	free(ptr[0xf0]);
+	ptr[0xf0] = NULL;
+	free(ptr[0xf1]);
+	ptr[0xf1] = NULL;
+	free(ptr[0xf2]);
+	ptr[0xf2] = NULL;
+	free(ptr[0xf3]);
+	ptr[0xf3] = NULL;
+
+	void *new = malloc(32);
+	printk("0x%08x - size: %u\n", new, get_size(new));
+	free(new);
+
+	for (int i = 0; i != 0x400; ++i)
+		free(ptr[i]);
+}
 
 void kmain(void)
 {
@@ -14,14 +40,5 @@ void kmain(void)
 	paging_init();
 	kinit();
 	banner();
-
-	void *a = malloc(16);
-	printk("a: 0x%08x, size: %u\n", a, get_size(a));
-	void *b = malloc(16);
-	printk("b: 0x%08x, size: %u\n", b, get_size(b));
-
-	free(a);
-	free(b);
-	void *c = malloc(32);
-	printk("c: 0x%08x, size: %u\n", c, get_size(c));
+	test();
 }
