@@ -8,6 +8,10 @@
 
 void test(void)
 {
+	void *kptr = kmalloc(1024);
+	printk("kptr: 0x%08x - size: %u\n", kptr, ksize(kptr));
+	kfree(kptr);
+
 	void **ptr = malloc(0x400 * sizeof(void*));
 
 	for (int i = 0; i != 0x400; ++i) {
@@ -31,6 +35,7 @@ void test(void)
 
 	for (int i = 0; i != 0x400; ++i)
 		free(ptr[i]);
+	free(ptr);
 }
 
 void kmain(void)
