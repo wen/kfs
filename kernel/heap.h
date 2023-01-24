@@ -32,7 +32,7 @@ typedef struct heap_s {
 heap_t *create_heap(uintptr_t, uintptr_t, uintptr_t, uint8_t, uint8_t);
 void *heap_alloc(size_t size, uint8_t page_align, heap_t *heap);
 void heap_free(void *p, heap_t *heap);
-size_t get_size(void *ptr);
-size_t kget_size(void *ptr);
+size_t size(void *ptr);
+size_t ksize(void *ptr);
 
 #endif

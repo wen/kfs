@@ -15,7 +15,7 @@ void test(void)
 		memcpy(ptr[i], "AAAAAAAA", 8);
 	}
 
-	printk("0x%08x - size: %u\n", ptr[0xf0], get_size(ptr[0xf0]));
+	printk("0x%08x - size: %u\n", ptr[0xf0], size(ptr[0xf0]));
 	free(ptr[0xf0]);
 	ptr[0xf0] = NULL;
 	free(ptr[0xf1]);
@@ -26,7 +26,7 @@ void test(void)
 	ptr[0xf3] = NULL;
 
 	void *new = malloc(32);
-	printk("0x%08x - size: %u\n", new, get_size(new));
+	printk("0x%08x - size: %u\n", new, size(new));
 	free(new);
 
 	for (int i = 0; i != 0x400; ++i)

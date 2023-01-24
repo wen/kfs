@@ -260,7 +260,7 @@ void heap_free(void *p, heap_t *heap)
 		insert_vec(header, &heap->index);
 }
 
-size_t get_size(void *ptr)
+size_t size(void *ptr)
 {
 	if (!ptr)
 		return 0;
@@ -273,7 +273,7 @@ size_t get_size(void *ptr)
 	return header->size - sizeof(header_t) - sizeof(footer_t);
 }
 
-size_t kget_size(void *ptr)
+size_t ksize(void *ptr)
 {
-	return get_size((void*)get_virtual_addr((uintptr_t)ptr));
+	return size((void*)get_virtual_addr((uintptr_t)ptr));
 }
