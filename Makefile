@@ -7,7 +7,6 @@ SRCS := $(shell find . -type f -name "*.c")
 OBJS := $(SRCS:.c=.o)
 ASM_SRCS := $(shell find kernel -type f -name "*.s")
 ASM_OBJS := $(ASM_SRCS:.s=.o)
-RM := /bin/rm -f
 
 .PHONY: all clean fclean re iso
 
