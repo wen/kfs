@@ -8,10 +8,6 @@
 
 void test(void)
 {
-	void *kptr = kmalloc(1024);
-	printk("kptr: 0x%08x - size: %u\n", kptr, ksize(kptr));
-	kfree(kptr);
-
 	void **ptr = malloc(0x400 * sizeof(void*));
 
 	for (int i = 0; i != 0x400; ++i) {
@@ -19,6 +15,7 @@ void test(void)
 		memcpy(ptr[i], "AAAAAAAA", 8);
 	}
 
+	// create a hole and show its address
 	printk("0x%08x - size: %u\n", ptr[0xf0], size(ptr[0xf0]));
 	free(ptr[0xf0]);
 	ptr[0xf0] = NULL;
@@ -29,6 +26,7 @@ void test(void)
 	free(ptr[0xf3]);
 	ptr[0xf3] = NULL;
 
+	// allocate something to fill the hole
 	void *new = malloc(32);
 	printk("0x%08x - size: %u\n", new, size(new));
 	free(new);
@@ -36,6 +34,10 @@ void test(void)
 	for (int i = 0; i != 0x400; ++i)
 		free(ptr[i]);
 	free(ptr);
+
+	void *kptr = kmalloc(1024);
+	printk("kptr: 0x%08x - size: %u\n", kptr, ksize(kptr));
+	kfree(kptr);
 }
 
 void kmain(void)
